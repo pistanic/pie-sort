@@ -1,8 +1,13 @@
-import ocr
+import ocr # for source see: ocr/
+import nlp # for source see: nlp/
 
 def main():
 	print("Hello World")
-	print(ocr.simple_ocr("images/example.png"))
+	text = ocr.simple_ocr("images/example.png");
+	print("Tesseract OCR output:")
+	print(text)
+	print("Stanford Nlp output:")
+	nlp.simple_nlp(text);
 
 if __name__ == '__main__':
 	main()
