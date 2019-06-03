@@ -2,8 +2,9 @@
 
 from pdf2image import convert_from_path
 
-def pdftojpg(pdf_path):
+def pdftojpg(pdf_path, jpg_path):
+    #PDF to JPG
 
-    images_from_path = conver_from_path(pdf_path, outputfolder='/home/pie/pie-sort/JPEGs')
+    images_from_path = convert_from_path(pdf_path, dpi=200, output_folder=jpg_path) #PDF to PIL image output
 
-    return jpg_path
+    return images_from_path

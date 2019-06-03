@@ -1,23 +1,27 @@
-# Simple Example for geting started with tesseract. 
-# Adapted from the example provided here: https://www.pyimagesearch.com/2017/07/10/using-tesseract-ocr-python/
-
-# import the necessary packages
-from PIL import Image
 import pytesseract
-import cv2
+import csv
+import pandas as pd
 import os
+import time
 
-def simple_ocr(filepath):
-# load the example image and convert it to grayscale
-	image = cv2.imread(filepath)
-	gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+from PIL import Image, ImageEnhance, ImageFilter
 
-# write the grayscale image to disk as a temporary file so we can
-# apply OCR to it
-	filename = "{}.png".format(os.getpid())
-	cv2.imwrite(filename, gray)
-# load the image as a PIL/Pillow image, apply OCR, and then delete
-# the temporary file
-	text = pytesseract.image_to_string(Image.open(filename))
-	os.remove(filename)
-	return text
+
+def extract_text(im):
+     # returns text from image in form as string and then converts string into Pandas dataframe
+
+
+    text = pytesseract.image_to_data(Image.open(im)) # Tesseract OCR
+
+    # Write tab delimited string into txt file
+    file = open('/home/pie/pie-workspace/repo/ocr_data.txt', 'w')
+    file.write(text)
+    file.close
+
+def text_to_dataframe():
+    # Extract txt file into pandas dataframe and returns dataframe
+
+    df = pd.read_csv('/home/pie/pie-workspace/repo/ocr_data.txt', sep='\t')
+    df.to_excel('/home/pie/pie-workspace/repo/ocr_data.xlsx')  # **** saves into excel TO BE DELETED LATER ****
+
+    return df
