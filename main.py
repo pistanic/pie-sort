@@ -1,19 +1,29 @@
 import preproc # for source see: preproc/
 import ocr # for source see: ocr/
 import nlp # for source see: nlp/
+import docMan # four source see: docMan/
 
 def main():
+    LOCAL_DIR = './'
+    PDF_DIR = LOCAL_DIR+'PDF/'
+    TMP_DIR = LOCAL_DIR+'tmp/'
+    IMG_DIR = LOCAL_DIR+'img/'
     # Preprocessing Stage
-    img = preproc.pdftojpg('./PDF/1.pdf', './tmp/images/')
 
-    filename = '94552282-22a4-45a8-a1ec-d90bd5e39f25-1.ppm'
-    # OCR Stage
-    ocr.extract_text('./tmp/images/'+filename) # TO DO: NEED TO MAKE FUNCTION TO CHECK FOLDER FOR IMAGE NAME
-    ocr_df = ocr.text_to_dataframe()
+    file_list = docMan.get_file_list(PDF_DIR)
+    for file_ in file_list:
+        preproc.pdftojpg((PDF_DIR+file_), IMG_DIR) # store image in IMG_DIR
 
-    # NLP Stage
-    PHN = nlp.extract_PHN(ocr_df)
-    print(PHN)
+    image_list = docMan.get_image_name(IMG_DIR)
+    for img_ in image_list:
+        img_path = IMG_DIR+img_
+        # OCR Stage
+        ocr.extract_text(img_path) # TO DO: NEED TO MAKE FUNCTION TO CHECK FOLDER FOR IMAGE NAME
+        ocr_df = ocr.text_to_dataframe()
+
+        # NLP Stage
+        PHN = nlp.extract_PHN(ocr_df)
+        print(PHN)
 
     #text = ocr.simple_ocr("images/example.png");
     #print("Tesseract OCR output:")
