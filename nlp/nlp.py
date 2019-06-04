@@ -1,4 +1,4 @@
-# Simple Example for geting started with tesseract. 
+# Simple Example for geting started with tesseract.
 # Adapted from the example provided here: https://stanfordnlp.github.io/stanfordnlp/
 
 import stanfordnlp
