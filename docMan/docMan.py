@@ -1,6 +1,6 @@
 # Document Managment module.
 import tempfile
-from os import listdir
+from os import listdir, remove
 from os.path import isfile, join, splitext, basename
 from shutil import rmtree
 from pdf2image import convert_from_path
@@ -14,6 +14,9 @@ def get_image_name(path):
 
 def delete_dir(path):
     rmtree(path)
+
+def delete_file(path):
+    remove(path)
 
 def pdf2jpg(pdf_path, jpg_path):
     #PDF to JPG

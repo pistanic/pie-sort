@@ -7,13 +7,13 @@ import time
 from PIL import Image, ImageEnhance, ImageFilter
 
 
-def extract_text(im):
+def extract_text(immg_path, txt_path):
      # returns text from image in form as string and then converts string into Pandas dataframe
 
-    text = pytesseract.image_to_data(Image.open(im)) # Tesseract OCR
+    text = pytesseract.image_to_data(Image.open(immg_path)) # Tesseract OCR
 
     # Write tab delimited string into txt file
-    file = open('./tmp/txt/ocr_data.txt', 'w')
+    file = open(txt_path, 'w')
     file.write(text)
     file.close
 
