@@ -12,11 +12,9 @@ def main():
 
     file_list = docMan.get_file_list(PDF_DIR)
     for file_ in file_list:
-        preproc.pdftojpg((PDF_DIR+file_), IMG_DIR) # store image in IMG_DIR
-
-    image_list = docMan.get_image_name(IMG_DIR)
-    for img_ in image_list:
-        img_path = IMG_DIR+img_
+        image_name = docMan.pdf2jpg((PDF_DIR+file_), IMG_DIR) # store image in IMG_DIR
+        print(image_name)
+        img_path = IMG_DIR+image_name
         # OCR Stage
         ocr.extract_text(img_path) # TO DO: NEED TO MAKE FUNCTION TO CHECK FOLDER FOR IMAGE NAME
         ocr_df = ocr.text_to_dataframe()

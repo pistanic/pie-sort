@@ -1,2 +1,2 @@
 # Import functions from preproc.py
-from .preproc import pdftojpg
+#from .preproc import <function name>
