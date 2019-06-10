@@ -21,7 +21,7 @@ def main():
         txt_path = TXT_DIR+image_name.replace('.jpg','.txt')
         print(txt_path)
         ocr.extract_text(img_path, txt_path)
-        ocr_df = ocr.text_to_dataframe()
+        ocr_df = ocr.text_to_dataframe(txt_path)
 
         # NLP Stage
         PHN = nlp.simple_nlp(nlp.extract_PHN(ocr_df))
