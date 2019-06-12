@@ -24,8 +24,10 @@ def main():
         ocr_df = ocr.text_to_dataframe(txt_path)
 
         # NLP Stage
-        PHN = nlp.simple_nlp(nlp.extract_PHN(ocr_df))
-        print(PHN)
+        #PHN = nlp.simple_nlp(nlp.extract_PHN(ocr_df))
+        #print(PHN)
+        name_list = ['Andrea', 'Stacey'] # This is for a demo. This list will be returned by a validate names function.
+        print(ocr.create_name_candidates(name_list, ocr_df))
 
     #text = ocr.simple_ocr("images/example.png");
     #print("Tesseract OCR output:")
