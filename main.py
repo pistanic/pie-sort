@@ -10,6 +10,8 @@ def main():
     IMG_DIR = TMP_DIR+'img/'
     TXT_DIR = TMP_DIR+'txt/'
 
+
+
     # Preprocessing Stage
     file_list = docMan.get_file_list(PDF_DIR)
     for file_ in file_list:
@@ -28,6 +30,11 @@ def main():
         #print(PHN)
         name_list = ['Andrea', 'Stacey'] # This is for a demo. This list will be returned by a validate names function.
         print(ocr.create_name_candidates(name_list, ocr_df))
+
+        names = nlp.hack_extract_names(ocr_df)
+
+
+       #nlptext = nlp.simple_nlp(ocr_df['text'])
 
     #text = ocr.simple_ocr("images/example.png");
     #print("Tesseract OCR output:")
