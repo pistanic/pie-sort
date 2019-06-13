@@ -19,13 +19,11 @@ def DefineSearchBox(VerticalLocation, HorinzontalLocation, Width,Height):
     else:
         SearchBox_Horizontal_Location = VerticalLocation - SearchWidth
 
-    #Sets search to extend either side of origial box X pixels
+    #Sets search to extend either side of origial box by X pixels
     SearchBox_Width = Width + SearchWidth*2
     SearchBox_Height = Height +SearchHeight*2
 
     SearchBox = np.array([SearchBox_Vertical_Location,SearchBox_Horizontal_Location, SearchBox_Width,SearchBox_Height])
-
-    print(SearchBox)
 
     return SearchBox
 
@@ -33,7 +31,6 @@ def DefineSearchBox(VerticalLocation, HorinzontalLocation, Width,Height):
 def ReturnInsideSearchBox(Searchbox,df):
     SearchResults = df.copy(deep=True)
 
-    print(Searchbox)
 
     leftBound=Searchbox[0]
     rightBound=Searchbox[0]+Searchbox[2]
@@ -45,7 +42,6 @@ def ReturnInsideSearchBox(Searchbox,df):
     SearchResults = SearchResults.loc[SearchResults['left'] < rightBound]
     SearchResults = SearchResults.loc[SearchResults['top'] > upBound]
     SearchResults = SearchResults.loc[SearchResults['top'] < bottomBound]
-    SearchResults.to_excel('/Users/Jake_Mawdsley/PycharmProjects/pie-sort/Misc/output.xlsx')  # Why do we need both? you can display csv with formatting.
 
     return SearchResults
 
