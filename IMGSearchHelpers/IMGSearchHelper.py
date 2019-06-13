@@ -1,48 +1,56 @@
-import pandas as pd
 import numpy as np
-
-class patient(object):
-    def __init__(self):
-        self.FirstName = 'Nan'
-        self.MiddleName = 'Nan'
-        self.LastName = 'Nan'
-        self.PHN = 'Nan'
-        self.DOB_YYYY = 'Nan'
-        self.DOB_MM = 'Nan'
-        self.DOB_DD = 'Nan'
-        self.FilePath = 'Nan'
+import pandas as pd
 
 
-    def assign_First_Name(First):
-        self.FirstName = First
-
-    def assign_Middle_Name(Middle):
-        self.MiddleName = Middle
-
-    def assign_Last_Name(Last):
-        self.LastName = Last
-
-    def assign_PHN(PHN):
-        self.PHN = PHN
-
-    def assign_DOB_YYYY(YYYY):
-        self.DOB_YYYY = YYYY
-
-    def assign_DOB_MM(MM):
-        self.DOB_MM = MM
-
-    def assign_DOB_DD(DD):
-        self.DOB_DD = DD
-
-    def assign_FilePath(FP):
-        self.FilePath = FP
-
-    def returnInfo(self):
-        array = [self.FirstName,self.MiddleName,self.LastName,self.PHN,self.DOB_YYYY,self.DOB_MM, self.DOB_DD]
-        return array
+#Defines Search box area
+def DefineSearchBox(VerticalLocation, HorinzontalLocation, Width,Height):
+    SearchWidth = 50 #searches this width on either side
+    SearchHeight = 50#searches this height on either side
 
 
-#Input Column to search and value to find
+    #Checks to ensure box isnt out of bounds, sets box location to
+    if((VerticalLocation-SearchHeight)<0):
+        SearchBox_Vertical_Location = 0
+    else:
+        SearchBox_Vertical_Location = VerticalLocation - SearchHeight
+
+    if ((HorinzontalLocation - SearchWidth) < 0):
+        SearchBox_Horizontal_Location = 0
+    else:
+        SearchBox_Horizontal_Location = VerticalLocation - SearchWidth
+
+    #Sets search to extend either side of origial box X pixels
+    SearchBox_Width = Width + SearchWidth*2
+    SearchBox_Height = Height +SearchHeight*2
+
+    SearchBox = np.array([SearchBox_Vertical_Location,SearchBox_Horizontal_Location, SearchBox_Width,SearchBox_Height])
+
+    print(SearchBox)
+
+    return SearchBox
+
+#Returns New Dataframe with
+def ReturnInsideSearchBox(Searchbox,df):
+    SearchResults = df.copy(deep=True)
+
+    print(Searchbox)
+
+    leftBound=Searchbox[0]
+    rightBound=Searchbox[0]+Searchbox[2]
+    upBound=Searchbox[1]
+    bottomBound=Searchbox[1]+Searchbox[3]
+
+    #Finds datapoints that have location origin within SearchBox
+    SearchResults = SearchResults.loc[SearchResults['left'] > leftBound]
+    SearchResults = SearchResults.loc[SearchResults['left'] < rightBound]
+    SearchResults = SearchResults.loc[SearchResults['top'] > upBound]
+    SearchResults = SearchResults.loc[SearchResults['top'] < bottomBound]
+    SearchResults.to_excel('/Users/Jake_Mawdsley/PycharmProjects/pie-sort/Misc/output.xlsx')  # Why do we need both? you can display csv with formatting.
+
+    return SearchResults
+
+
+#Finds values inside dataframe and returns dataframe
 def findInDataframe(df,column,value):
     SimpleDataframe = df.copy(deep=True)
 
@@ -50,8 +58,8 @@ def findInDataframe(df,column,value):
 
     return SimpleDataframe
 
-
-def init_TestPatientsDataFrame()
+#Initialized patient dataframe for patients in given database
+def init_TestPatientsDataFrame():
     # First Name/Middle Name/Middle Name/Last Name/PHN/DOB-YYYY/DOB-MM/DOB-DD/FILE PATH
     # Patients in test images
     patient1 = ['Cowan', 'A', 'Wood', '1742791', '1967', '06', '13','Editted Holter 2.pdf']
@@ -68,7 +76,6 @@ def init_TestPatientsDataFrame()
     patient12 = ['Rob', 'Nan', 'Todd', '9896819634', '1963', '02', '01', 'Editted ECG 3.pdf'] # DOB unclear, name unclear
     patient13 = ['Joe', 'Nan', 'House', '9020179357', '1942', '05', '04', 'Editted ECG 2.pdf']# DOB unclear, name unclear
     patient14 = ['Karen', 'Nan', 'Johnston', '002253474', '1932', '11', '09', 'Editted ECG 1.pdf']
-
 
     # Test patients
     patient15 = ['Terry', 'Perry', 'Jerry', '111111111', '1999', '03', '02','Not Assigned']

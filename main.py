@@ -2,6 +2,7 @@ import preproc # for source see: preproc/
 import ocr # for source see: ocr/
 import nlp # for source see: nlp/
 import docMan # four source see: docMan/
+import IMGSearchHelpers
 
 def main():
     LOCAL_DIR = '/Users/Jake_Mawdsley/PycharmProjects/pie-sort/Misc/'
