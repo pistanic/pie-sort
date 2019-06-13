@@ -4,7 +4,7 @@ import nlp # for source see: nlp/
 import docMan # four source see: docMan/
 
 def main():
-    LOCAL_DIR = './'
+    LOCAL_DIR = '/Users/Jake_Mawdsley/PycharmProjects/pie-sort/Misc/'
     PDF_DIR = LOCAL_DIR+'PDF/'
     TMP_DIR = LOCAL_DIR+'tmp/'
     IMG_DIR = TMP_DIR+'img/'
@@ -13,6 +13,7 @@ def main():
     # Preprocessing Stage
     file_list = docMan.get_file_list(PDF_DIR)
     for file_ in file_list:
+        print(file_)
         image_name = docMan.pdf2jpg((PDF_DIR+file_), IMG_DIR) # store image in IMG_DIR
         print(image_name)
         img_path = IMG_DIR+image_name
