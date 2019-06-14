@@ -1,9 +1,9 @@
 import preproc # for source see: preproc/
 import ocr # for source see: ocr/
 import nlp # for source see: nlp/
-import docMan # for source see: docMan/
 import ezRead
-from enum import Enum
+import docMan # four source see: docMan/
+import IMGSearchHelpers
 
 def main():
     LOCAL_DIR = './'
@@ -29,7 +29,6 @@ def main():
         # NLP Stage
         #PHN = nlp.simple_nlp(nlp.extract_PHN(ocr_df))
         #print(PHN)
-        #name_list = ['Andrea', 'Stacey'] # This is for a demo. This list will be returned by a validate names function.
 
         # Strip master dataframe of all commas after most processing has been done.
         comma_free_df = ocr.strip_df_commas(ocr_df)
