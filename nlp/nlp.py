@@ -3,10 +3,9 @@
 
 import stanfordnlp
 import nltk
-import pandas as pd
 from nltk.corpus import stopwords
 stop = stopwords.words('english')
-import re
+
 
 def extract_PHN(df):
     # Takes pandas dataframe from OCR  and returns extracted PHN
@@ -28,11 +27,13 @@ def simple_nlp(text):
     doc = nlp('David')
     return doc.print_dependencies()
 
+
 def prepocess_df(dirty_df):
     # drop all rows with text as nan
     clean_df = dirty_df.dropna()
 
     return clean_df
+
 
 def hack_extract_names(df):
     # returns list of two consecutive words that have capital first letters
@@ -54,3 +55,25 @@ def hack_extract_names(df):
                 else:
                     possible_names.append(df['text'].iloc[i] + " " + df['text'].iloc[i+1])
     return possible_names
+
+
+def pos_tagging(document):
+    # Tokenize string  and return array of parts of speech tagging
+    sentences = nltk.sent_tokenize(document)
+    words = [nltk.word_tokenize(sent) for sent in sentences]
+    tagged_words = [nltk.pos_tag(word) for word in words]
+    return tagged_words
+
+
+def extract_names(document):
+    # output array of possible  names using NLTK Named Entity Recognition
+
+    names = []
+    tagged = pos_tagging(document)
+    named_ent = nltk.ne_chunk(tagged[0])
+    for chunk in named_ent:
+        if type(chunk) == nltk.tree.Tree:
+            if chunk.label() == 'PERSON':
+                names.append(' '.join([c[0] for c in chunk])) # add possible names to arra
+    return names
+

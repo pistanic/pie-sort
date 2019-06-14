@@ -24,6 +24,7 @@ def main():
         print(txt_path)
         ocr.extract_text(img_path, txt_path)
         ocr_df = ocr.text_to_dataframe(txt_path)
+        ocr_str = ocr.extract_string(img_path)
 
         # NLP Stage
         #PHN = nlp.simple_nlp(nlp.extract_PHN(ocr_df))
@@ -31,9 +32,9 @@ def main():
         name_list = ['Andrea', 'Stacey'] # This is for a demo. This list will be returned by a validate names function.
         print(ocr.create_name_candidates(name_list, ocr_df))
 
-        names = nlp.hack_extract_names(ocr_df)
-
-
+        hack_names = nlp.hack_extract_names(ocr_df)
+        nlp_names = nlp.extract_names(ocr_str)
+        print(nlp_names)
        #nlptext = nlp.simple_nlp(ocr_df['text'])
 
     #text = ocr.simple_ocr("images/example.png");
