@@ -1,7 +1,9 @@
 import preproc # for source see: preproc/
 import ocr # for source see: ocr/
 import nlp # for source see: nlp/
+import ezRead
 import docMan # four source see: docMan/
+import IMGSearchHelpers
 
 def main():
     LOCAL_DIR = './'
@@ -15,6 +17,7 @@ def main():
     # Preprocessing Stage
     file_list = docMan.get_file_list(PDF_DIR)
     for file_ in file_list:
+        print(file_)
         image_name = docMan.pdf2jpg((PDF_DIR+file_), IMG_DIR) # store image in IMG_DIR
         print(image_name)
         img_path = IMG_DIR+image_name
@@ -29,8 +32,17 @@ def main():
         # NLP Stage
         #PHN = nlp.simple_nlp(nlp.extract_PHN(ocr_df))
         #print(PHN)
-        name_list = ['Andrea', 'Stacey'] # This is for a demo. This list will be returned by a validate names function.
-        print(ocr.create_name_candidates(name_list, ocr_df))
+
+        # Strip master dataframe of all commas after most processing has been done.
+        comma_free_df = ocr.strip_df_commas(ocr_df)
+
+        name_list = ['Contrast Smailys', 'Stacey Lynn'] # This is for a demo. This list will be returned by a validate names function.
+        name_cand_dict = ocr.create_name_candidates(name_list, comma_free_df)
+        # Access confedence for the first instance of 'Contrast'
+        # name_cand_dict[<Key>][<First/Last>][instance][data]
+        print(name_cand_dict['Contrast Smailys'][ezRead.first_name()][0][ezRead.conf()])
+
+
 
         hack_names = nlp.hack_extract_names(ocr_df)
         nlp_names = nlp.extract_names(ocr_str)
