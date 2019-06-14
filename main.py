@@ -5,7 +5,7 @@ import docMan # four source see: docMan/
 import IMGSearchHelpers
 
 def main():
-    LOCAL_DIR = '/Users/Jake_Mawdsley/PycharmProjects/pie-sort/Misc/'
+    LOCAL_DIR = './'
     PDF_DIR = LOCAL_DIR+'PDF/'
     TMP_DIR = LOCAL_DIR+'tmp/'
     IMG_DIR = TMP_DIR+'img/'
