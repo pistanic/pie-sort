@@ -11,13 +11,19 @@ from PIL import Image, ImageEnhance, ImageFilter
 # INPUT: immg_path - path to immage that tesseract will process
 #        txt_path - path to text file that tesseract will write data to.
 # RETURN: pandas dataframe created from csv file.
-def extract_text(immg_path, txt_path):
+def extract_text(img_path, txt_path):
      # returns text from image in form as string and then converts string into Pandas dataframe
-    text = pytesseract.image_to_data(Image.open(immg_path)) # Tesseract OCR
+    text = pytesseract.image_to_data(Image.open(img_path)) # Tesseract OCR
     # Write tab delimited string into txt file
     file = open(txt_path, 'w')
     file.write(text)
     file.close
+
+
+def extract_string(img_path):
+    # returns text from image in form as string
+    text = pytesseract.image_to_string(Image.open(img_path))  # Tesseract OCR)
+    return text
 
 # INPUT: text_path - path to csv data
 # RETURN: pandas dataframe created from csv file.

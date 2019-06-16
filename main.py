@@ -15,6 +15,8 @@ def main():
     IMG_DIR = TMP_DIR+'img/'
     TXT_DIR = TMP_DIR+'txt/'
 
+
+
     # Preprocessing Stage
     file_list = docMan.get_file_list(PDF_DIR)
     for file_ in file_list:
@@ -28,6 +30,7 @@ def main():
         print(txt_path)
         ocr.extract_text(img_path, txt_path)
         ocr_df = ocr.text_to_dataframe(txt_path)
+        ocr_str = ocr.extract_string(img_path)
 
         # NLP Stage
         #PHN = nlp.simple_nlp(nlp.extract_PHN(ocr_df))
@@ -51,6 +54,11 @@ def main():
 
             if(patient_database['Last_Name'].str.contains(last_name).any()):
                 print(last_name+" has been validated")
+
+        hack_names = nlp.hack_extract_names(ocr_df)
+        nlp_names = nlp.extract_names(ocr_str)
+        print(nlp_names)
+       #nlptext = nlp.simple_nlp(ocr_df['text'])
 
     #text = ocr.simple_ocr("images/example.png");
     #print("Tesseract OCR output:")
