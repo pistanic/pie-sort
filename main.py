@@ -5,6 +5,9 @@ import ezRead
 import docMan # four source see: docMan/
 import IMGSearchHelpers
 
+patient_database = IMGSearchHelpers.init_TestPatientsDataFrame()
+print(patient_database)
+
 def main():
     LOCAL_DIR = './'
     PDF_DIR = LOCAL_DIR+'PDF/'
@@ -38,8 +41,16 @@ def main():
         # Access confedence for the first instance of 'Contrast'
         # name_cand_dict[<Key>][<First/Last>][instance][data]
         print(name_cand_dict['Contrast Smailys'][ezRead.first_name()][0][ezRead.conf()])
+        # test validate
+        for name in name_list:
+            first_name = name_cand_dict[name][ezRead.first_name()][0][ezRead.text()]
+            last_name = name_cand_dict[name][ezRead.last_name()][0][ezRead.text()]
+            # read the text for the first instane of each name
+            if(patient_database['First_Name'].str.contains(first_name).any()):
+                print(first_name+" has been validated")
 
-
+            if(patient_database['Last_Name'].str.contains(last_name).any()):
+                print(last_name+" has been validated")
 
     #text = ocr.simple_ocr("images/example.png");
     #print("Tesseract OCR output:")
