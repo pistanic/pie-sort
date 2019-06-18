@@ -1,15 +1,15 @@
 import preproc # for source see: preproc/
 import ocr # for source see: ocr/
-import nlp # for source see: nlp/
+#import nlp # for source see: nlp/
 import ezRead
 import docMan # four source see: docMan/
 import IMGSearchHelpers
 
-patient_database = IMGSearchHelpers.init_TestPatientsDataFrame()
-print(patient_database)
+#patient_database = IMGSearchHelpers.init_TestPatientsDataFrame()
+#print(patient_database)
 
 def main():
-    LOCAL_DIR = './'
+    LOCAL_DIR = '/Users/Jake_Mawdsley/PycharmProjects/pie-sort/Misc/'
     PDF_DIR = LOCAL_DIR+'PDF/'
     TMP_DIR = LOCAL_DIR+'tmp/'
     IMG_DIR = TMP_DIR+'img/'
@@ -31,6 +31,8 @@ def main():
         ocr.extract_text(img_path, txt_path)
         ocr_df = ocr.text_to_dataframe(txt_path)
         ocr_str = ocr.extract_string(img_path)
+
+        print(ocr_str)
 
         # NLP Stage
         #PHN = nlp.simple_nlp(nlp.extract_PHN(ocr_df))
