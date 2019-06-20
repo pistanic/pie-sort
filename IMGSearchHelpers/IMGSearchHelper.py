@@ -54,6 +54,16 @@ def findInDataframe(df,column,value):
 
     return SimpleDataframe
 
+
+#Boolean function that determines if Searchvalue is in dataframe
+def IsInDataframe(df,column,Searchvalue):
+
+    if(Searchvalue in df[column]):
+        return True
+
+    else:
+        return False
+
 #Initialized patient dataframe for patients in given database
 def init_TestPatientsDataFrame():
     # First Name/Middle Name/Middle Name/Last Name/PHN/DOB-YYYY/DOB-MM/DOB-DD/FILE PATH
