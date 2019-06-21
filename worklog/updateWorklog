@@ -1,11 +1,11 @@
 #!/bin/sh
 
-if [ "$#" -lt 3 ]; then
+if [ "$#" -lt 2 ]; then
 	echo "<Hours> <'log'>."
 	exit 1
 else
 	FILE="worklog.txt"
 	DATE="$(date)"
-	echo "Date: ${DATE} Hours: ${2}" >> ${FILE}
-	echo "	log: ${3}" >> ${FILE}
+	echo "Date: ${DATE} Hours: ${1}" >> ${FILE}
+	echo "	log: ${2}" >> ${FILE}
 fi
