@@ -55,11 +55,13 @@ def find_in_df(df,column,value):
     return SimpleDataframe
 
 def get_dob_from_phn(df,phn):
-    # This function should return the DOB as a string that can be searched
-    # in the ocr output.
     # INPUT: df = test database
     #        phn = personal helth number
-    return 'void'
+    patient_df = find_in_df(df, 'PHN', phn)
+    year = patient_df['DOB-YYYY']
+    month = patient_df['DOB-MM']
+    day = patient_df['DOB-DD']
+    return day + '/' + month + '/' + year
 
 
 def get_name_from_phn(df, phn):
@@ -104,6 +106,6 @@ def init_test_db():
     patient15 = ['Terry', 'Perry', 'Jerry', '111111111', '1999', '03', '02','Not Assigned']
     patient16 = ['Terry', 'Gary', 'Lary', '222222222', '1999', '04', '02','Not Assigned']
     patient17 = ['Ferry', 'Dairy', 'Kerry', '3333333333', '1999', '05', '02','Not Assigned']
-    df = pd.DataFrame(np.array([patient1, patient2, patient3, patient4, patient5, patient6,patient7,patient8,patient9,patient10,patient11,patient12,patient13,patient14,patient15,patient16,patient17]),columns=['First_Name', 'Middle_Name', 'Last_Name', 'PHN', 'DOB-YYY', 'DOB-MM', 'DOB-DD','Filepath'])
+    df = pd.DataFrame(np.array([patient1, patient2, patient3, patient4, patient5, patient6,patient7,patient8,patient9,patient10,patient11,patient12,patient13,patient14,patient15,patient16,patient17]),columns=['First_Name', 'Middle_Name', 'Last_Name', 'PHN', 'DOB-YYYY', 'DOB-MM', 'DOB-DD','Filepath'])
 
     return df
