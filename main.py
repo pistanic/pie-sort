@@ -40,8 +40,20 @@ def main():
         ocr_str = ocr.extract_string(img_path)
 
         # NLP Stage
-        #PHN = nlp.simple_nlp(nlp.extract_PHN(ocr_df))
-        #print(PHN)
+        # Create list of possible PHNs for patient
+        PHNs = nlp.nlp.extract_PHN(ocr_df)
+        print('\n List of possible PHNs from document:')
+        print(PHNs)
+
+        # Create list of possible names for patient
+        hack_names = nlp.hack_extract_names(ocr_df)
+        print('\n List of possible names from document:')
+        print(hack_names)
+
+        # Create list of possible date of births for patient
+        DOBs = nlp.extract_DOB(ocr_df)
+        print('\n List of possible DOBs from document:')
+        print(DOBs)
 
         # Strip master dataframe of all commas after most processing has been done.
         comma_free_df = ocr.strip_df_commas(ocr_df)
@@ -63,18 +75,19 @@ def main():
             if(patient_database['Last_Name'].str.contains(last_name).any()):
                 print("following name has been validated as last name", last_name)
 
-        # Validate debug
-        phn = nlp.extract_PHN(ocr_df)
-        validate.phn_primary(phn, patient_database)
-        #printf('get_name_from_phn', searchHelp.get_name_from_phn(patient_database, phn))
-        #printf('get_DOB_from_phn', searchHelp.get_dob_from_phn(patient_database, phn))
-
-
+        # NLP
         hack_names = nlp.hack_extract_names(ocr_df)
         nlp_names = nlp.extract_names(ocr_str)
         printf('nlp_names', nlp_names)
+        hack_names = nlp.hack_extract_names(ocr_df)
+
+        phn = nlp.extract_PHN(ocr_df)
        #nlptext = nlp.simple_nlp(ocr_df['text'])
 
+        # Validate debug
+        validate.phn_primary(phn, patient_database)
+        #printf('get_name_from_phn', searchHelp.get_name_from_phn(patient_database, phn))
+        #printf('get_DOB_from_phn', searchHelp.get_dob_from_phn(patient_database, phn))
 
 
     #text = ocr.simple_ocr("images/example.png");
