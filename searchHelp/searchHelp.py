@@ -54,7 +54,7 @@ def find_in_df(df,column,value):
 
     return SimpleDataframe
 
-def get_dob_from_phn(df,phn:
+def get_dob_from_phn(df,phn):
     # This function should return the DOB as a string that can be searched
     # in the ocr output.
     # INPUT: df = test database
@@ -62,14 +62,14 @@ def get_dob_from_phn(df,phn:
     return 'void'
 
 
-def get_name_from_phn(df,name):
-    # This function should return the DOB as a string that can be searched
-    # in the ocr output.
+def get_name_from_phn(df, phn):
     # INPUT: df = test database
     #        name = 'First_name Last_Name' this could be list or string. Pick one
     #               that is easyer to impl.
-
-    return 'void'
+    patient_df = find_in_df(df,'PHN',phn)
+    first_name = patient_df['First_Name']
+    last_name = patient_df['Last_Name']
+    return first_name + ' ' +last_name
 
 
 #Boolean function that determines if Searchvalue is in dataframe

@@ -7,7 +7,7 @@ import searchHelp
 
 def printf(name, value):
     print('+------------------------------------------------------------+')
-    print('  Printing Variable: '+name)
+    print('  Printing Variable - '+name+':')
     print(value)
     print('+------------------------------------------------------------+')
 
@@ -26,9 +26,9 @@ def main():
     file_list = docMan.get_file_list(PDF_DIR)
     for file_ in file_list:
 
-        print(file_)
+        printf('file_ in file_list', file_)
         image_name = docMan.pdf2jpg((PDF_DIR+file_), IMG_DIR) # store image in IMG_DIR
-        print(image_name)
+        print('image_name', image_name)
         img_path = IMG_DIR+image_name
 
         # OCR Stage
@@ -49,7 +49,7 @@ def main():
         name_cand_dict = ocr.create_name_candidates(name_list, comma_free_df)
         # Access confedence for the first instance of 'Contrast'
         # name_cand_dict[<Key>][<First/Last>][instance][data]
-        print('name_cand_dict confidence of first name of first instance for Contrast Samilys',name_cand_dict['Contrast Smailys'][ezRead.first_name()][0][ezRead.conf()])
+        printf('name_cand_dict confidence of first name of first instance for Contrast Samilys',name_cand_dict['Contrast Smailys'][ezRead.first_name()][0][ezRead.conf()])
 
         # test validate
         for name in name_list:
@@ -62,10 +62,16 @@ def main():
             if(patient_database['Last_Name'].str.contains(last_name).any()):
                 print("following name has been validated as last name", last_name)
 
+        # Validate debug
+        phn = nlp.extract_PHN(ocr_df)
+        printf('get_name_from_phn', searchHelp.get_name_from_phn(patient_database, phn))
+
         hack_names = nlp.hack_extract_names(ocr_df)
         nlp_names = nlp.extract_names(ocr_str)
         printf('nlp_names', nlp_names)
        #nlptext = nlp.simple_nlp(ocr_df['text'])
+
+
 
     #text = ocr.simple_ocr("images/example.png");
     #print("Tesseract OCR output:")
@@ -74,4 +80,4 @@ def main():
     #nlp.simple_nlp(text);
 
 if __name__ == '__main__':
-	main()
+    main()
