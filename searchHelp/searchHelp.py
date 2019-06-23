@@ -54,6 +54,23 @@ def find_in_df(df,column,value):
 
     return SimpleDataframe
 
+def get_dob_from_phn(df,phn:
+    # This function should return the DOB as a string that can be searched
+    # in the ocr output.
+    # INPUT: df = test database
+    #        phn = personal helth number
+    return 'void'
+
+
+def get_name_from_phn(df,name):
+    # This function should return the DOB as a string that can be searched
+    # in the ocr output.
+    # INPUT: df = test database
+    #        name = 'First_name Last_Name' this could be list or string. Pick one
+    #               that is easyer to impl.
+
+    return 'void'
+
 
 #Boolean function that determines if Searchvalue is in dataframe
 def is_in_df(df,column,Searchvalue):
