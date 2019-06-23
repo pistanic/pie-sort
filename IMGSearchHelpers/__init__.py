@@ -1,7 +1,7 @@
 # Import functions from IMGSearchHelper.py
-from .IMGSearchHelper import DefineSearchBox
-from .IMGSearchHelper import ReturnInsideSearchBox
-from .IMGSearchHelper import findInDataframe
-from .IMGSearchHelper import IsInDataframe
-from .IMGSearchHelper import init_TestPatientsDataFrame
+from .IMGSearchHelper import define_search_box
+from .IMGSearchHelper import return_inside_search_box
+from .IMGSearchHelper import find_in_df
+from .IMGSearchHelper import is_in_df
+from .IMGSearchHelper import init_test_db
 

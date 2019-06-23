@@ -3,7 +3,7 @@ import pandas as pd
 
 
 #Defines Search box area
-def DefineSearchBox(VerticalLocation, HorinzontalLocation, Width,Height):
+def define_search_box(VerticalLocation, HorinzontalLocation, Width,Height):
     SearchWidth = 50 #searches this width on either side
     SearchHeight = 50#searches this height on either side
 
@@ -28,7 +28,7 @@ def DefineSearchBox(VerticalLocation, HorinzontalLocation, Width,Height):
     return SearchBox
 
 #Returns New Dataframe with
-def ReturnInsideSearchBox(Searchbox,df):
+def return_inside_search_box(Searchbox,df):
     SearchResults = df.copy(deep=True)
 
 
@@ -47,7 +47,7 @@ def ReturnInsideSearchBox(Searchbox,df):
 
 
 #Finds values inside dataframe and returns dataframe
-def findInDataframe(df,column,value):
+def find_in_df(df,column,value):
     SimpleDataframe = df.copy(deep=True)
 
     SimpleDataframe = df.loc[df[column] == value]
@@ -56,7 +56,7 @@ def findInDataframe(df,column,value):
 
 
 #Boolean function that determines if Searchvalue is in dataframe
-def IsInDataframe(df,column,Searchvalue):
+def is_in_df(df,column,Searchvalue):
 
     if(Searchvalue in df[column]):
         return True
@@ -65,7 +65,7 @@ def IsInDataframe(df,column,Searchvalue):
         return False
 
 #Initialized patient dataframe for patients in given database
-def init_TestPatientsDataFrame():
+def init_test_db():
     # First Name/Middle Name/Middle Name/Last Name/PHN/DOB-YYYY/DOB-MM/DOB-DD/FILE PATH
     # Patients in test images
     patient1 = ['Cowan', 'A', 'Wood', '1742791', '1967', '06', '13','Editted Holter 2.pdf']
