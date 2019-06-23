@@ -75,11 +75,11 @@ def get_name_from_phn(df, phn):
 
 
 #Boolean function that determines if Searchvalue is in dataframe
-def is_in_df(df,column,Searchvalue):
-
-    if(Searchvalue in df[column]):
+def is_in_df(df,column, searchValue):
+    print(searchValue)
+    print(df[column])
+    if(searchValue in df[column]):
         return True
-
     else:
         return False
 

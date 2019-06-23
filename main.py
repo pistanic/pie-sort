@@ -4,6 +4,7 @@ import nlp # for source see: nlp/
 import ezRead
 import docMan # four source see: docMan/
 import searchHelp
+import validate
 
 def printf(name, value):
     print('+------------------------------------------------------------+')
@@ -64,8 +65,9 @@ def main():
 
         # Validate debug
         phn = nlp.extract_PHN(ocr_df)
-        printf('get_name_from_phn', searchHelp.get_name_from_phn(patient_database, phn))
-        printf('get_DOB_from_phn', searchHelp.get_dob_from_phn(patient_database, phn))
+        validate.phn_primary(phn, patient_database)
+        #printf('get_name_from_phn', searchHelp.get_name_from_phn(patient_database, phn))
+        #printf('get_DOB_from_phn', searchHelp.get_dob_from_phn(patient_database, phn))
 
 
         hack_names = nlp.hack_extract_names(ocr_df)
