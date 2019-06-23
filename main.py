@@ -81,11 +81,9 @@ def main():
         printf('nlp_names', nlp_names)
         hack_names = nlp.hack_extract_names(ocr_df)
 
-        phn = nlp.extract_PHN(ocr_df)
-       #nlptext = nlp.simple_nlp(ocr_df['text'])
-
         # Validate debug
-        validate.phn_primary(phn, patient_database)
+        for phn in PHNs:
+            validate.phn_primary(patient_database, phn)
         #printf('get_name_from_phn', searchHelp.get_name_from_phn(patient_database, phn))
         #printf('get_DOB_from_phn', searchHelp.get_dob_from_phn(patient_database, phn))
 

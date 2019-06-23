@@ -1,5 +1,5 @@
 # NLP module to find patient identifiers from OCR
-
+import nltk
 import spacy
 
 # ******* Libraries not in use *************

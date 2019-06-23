@@ -75,13 +75,12 @@ def get_name_from_phn(df, phn):
 
 
 #Boolean function that determines if Searchvalue is in dataframe
-def is_in_df(df,column, searchValue):
-    print(searchValue)
-    print(df[column])
-    if(searchValue in df[column]):
-        return True
-    else:
+def is_in_df(df, column, searchValue):
+    result_df = find_in_df(df, column, searchValue)
+    if(result_df.empty):
         return False
+    else:
+        return True
 
 #Initialized patient dataframe for patients in given database
 def init_test_db():
