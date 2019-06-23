@@ -3,7 +3,7 @@ import ocr # for source see: ocr/
 import nlp # for source see: nlp/
 import ezRead
 import docMan # four source see: docMan/
-import IMGSearchHelpers
+import searchHelp
 
 def printf(name, value):
     print('+------------------------------------------------------------+')
@@ -11,7 +11,7 @@ def printf(name, value):
     print(value)
     print('+------------------------------------------------------------+')
 
-patient_database = IMGSearchHelpers.init_test_db()
+patient_database = searchHelp.init_test_db()
 
 printf('patient_database',patient_database)
 
