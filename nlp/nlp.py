@@ -26,7 +26,7 @@ def extract_PHN(ocr_df):
 
 # INPUT: ocr_df - pandas dataframe of document OCR
 # RETURN: possible_DOBs - list of possible date of births
-def extract_DOB(ocr_df): #TODO Need to implement on string OCR instead of df because it won't work on df
+def extract_DOB(ocr_df): #TODO Need to utilize string OCR not df and develop rules to use with area of interest functions
     # searches OCR dataframe and returns list of possible date of births for patient
     nlp = spacy.load("en_core_web_sm")
     possible_DOBs = []
