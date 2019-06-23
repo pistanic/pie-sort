@@ -15,8 +15,6 @@ def main():
     IMG_DIR = TMP_DIR+'img/'
     TXT_DIR = TMP_DIR+'txt/'
 
-
-
     # Preprocessing Stage
     file_list = docMan.get_file_list(PDF_DIR)
     for file_ in file_list:
@@ -33,8 +31,20 @@ def main():
         ocr_str = ocr.extract_string(img_path)
 
         # NLP Stage
-        #PHN = nlp.simple_nlp(nlp.extract_PHN(ocr_df))
-        #print(PHN)
+        # Create list of possible PHNs for patient
+        PHNs = nlp.nlp.extract_PHN(ocr_df)
+        print('\n List of possible PHNs from document:')
+        print(PHNs)
+
+        # Create list of possible names for patient
+        hack_names = nlp.hack_extract_names(ocr_df)
+        print('\n List of possible names from document:')
+        print(hack_names)
+
+        # Create list of possible date of births for patient
+        DOBs = nlp.extract_DOB(ocr_df)
+        print('\n List of possible DOBs from document:')
+        print(DOBs)
 
         # Strip master dataframe of all commas after most processing has been done.
         comma_free_df = ocr.strip_df_commas(ocr_df)
@@ -55,9 +65,6 @@ def main():
             if(patient_database['Last_Name'].str.contains(last_name).any()):
                 print(last_name+" has been validated")
 
-        hack_names = nlp.hack_extract_names(ocr_df)
-        nlp_names = nlp.extract_names(ocr_str)
-        print(nlp_names)
        #nlptext = nlp.simple_nlp(ocr_df['text'])
 
     #text = ocr.simple_ocr("images/example.png");
