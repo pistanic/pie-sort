@@ -49,7 +49,7 @@ def main():
         printf('List of possible names from document:', hack_names)
 
         # Create list of possible date of births for patient
-        DOBs = nlp.extract_DOB(ocr_df)
+        DOBs = nlp.extract_DOB(ocr_str)
         printf('List of possible DOBs from document:', DOBs)
 
         # Strip master dataframe of all commas after most processing has been done.
@@ -65,7 +65,7 @@ def main():
         for name in name_list:
             first_name = name_cand_dict[name][ezRead.first_name()][0][ezRead.text()]
             last_name = name_cand_dict[name][ezRead.last_name()][0][ezRead.text()]
-            # read the text for the first instane of each name
+            # read the text for the first instance of each name
             if(patient_database['First_Name'].str.contains(first_name).any()):
                 printf("following name has been validated as first name", first_name)
 
