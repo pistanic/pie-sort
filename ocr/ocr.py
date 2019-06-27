@@ -19,7 +19,6 @@ def extract_text(img_path, txt_path):
     file.write(text)
     file.close
 
-
 def extract_string(img_path):
     # returns text from image in form as string
     text = pytesseract.image_to_string(Image.open(img_path))  # Tesseract OCR)
@@ -36,13 +35,16 @@ def text_to_dataframe(text_path):
 
 # INPUT: dataframe
 # RETURN: dataframe with all commas removed from the end of text.
-def strip_df_commas(df):
+def format_df(df):
     for index, row in df.iterrows():
         txt = row['text']
-        stxt=str(txt)
-        if(stxt.endswith(',')):
-            stxt = stxt[:-1]
-            df.at[index, 'text'] = stxt
+        stxt = str(txt)
+        ftxt = stxt.title()
+        df.at[index, 'text'] = ftxt
+        if(ftxt.endswith(',')):
+            ftxt = ftxt[:-1]
+            df.at[index, 'text'] = ftxt
+    print (df)
     return df
 
 # INPUT: names - list of name strings
@@ -93,19 +95,23 @@ def create_phn_candidates(phns, df):
 
     return phn_candidate_dict
 
-# INPUT: no_comma_df dataframe of ocr output with comma striped.
+# INPUT: formatted_df dataframe of ocr output with comma striped.
 #        name string - (first last)
-def look_for_name(no_comma_df, name):
+def look_for_name(formatted_df, name):
     print ('look_for_name debug: validating '+name)
     first_last = name.split(' ', 1)
+
     # Create a copy of the dataframe with rows shifted up one
-    no_comma_df["next_name"] = no_comma_df["text"].shift(1)
+    formatted_df["next_name"] = formatted_df["text"].shift(1)
+
     # Create a copy of the dataframe with rows shifted down one
-    no_comma_df["previous_name"] = no_comma_df["text"].shift(-1)
-    first_idx = no_comma_df.loc[no_comma_df['text'] == first_last[0]].index[0]
-    last_idx = no_comma_df.loc[no_comma_df['text'] == first_last[1]].index[0]
+    formatted_df["previous_name"] = formatted_df["text"].shift(-1)
+    print('first_last[0]:'+first_last[0])
+    print('first_last[1]:'+first_last[1])
+    first_idx = formatted_df.loc[formatted_df['text'] == first_last[0]].index[0]
+    last_idx = formatted_df.loc[formatted_df['text'] == first_last[1]].index[0]
     idx = [first_idx, last_idx]
-    names_df = no_comma_df.loc[idx,['text','next_name','previous_name']]
+    names_df = formatted_df.loc[idx,['text','next_name','previous_name']]
 
     print(names_df)
     for i in range(len(idx)):
