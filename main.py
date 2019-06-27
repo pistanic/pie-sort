@@ -29,35 +29,32 @@ def main():
 
         printf('file_ in file_list', file_)
         image_name = docMan.pdf2jpg((PDF_DIR+file_), IMG_DIR) # store image in IMG_DIR
-        print('image_name', image_name)
+        printf('image_name', image_name)
         img_path = IMG_DIR+image_name
 
         # OCR Stage
         txt_path = TXT_DIR+image_name.replace('.jpg','.txt')
-        print('txt_path',txt_path)
+        printf('txt_path',txt_path)
         ocr.extract_text(img_path, txt_path)
         ocr_df = ocr.text_to_dataframe(txt_path)
         ocr_str = ocr.extract_string(img_path)
 
         # NLP Stage
         # Create list of possible PHNs for patient
-        PHNs = nlp.nlp.extract_PHN(ocr_df)
-        print('\n List of possible PHNs from document:')
-        print(PHNs)
+        PHNs = nlp.extract_PHN(ocr_df)
+        printf('List of possible PHNs from document:', PHNs)
 
         # Create list of possible names for patient
         hack_names = nlp.hack_extract_names(ocr_df)
-        print('\n List of possible names from document:')
-        print(hack_names)
+        printf('List of possible names from document:', hack_names)
 
         # Create list of possible date of births for patient
         DOBs = nlp.extract_DOB(ocr_df)
-        print('\n List of possible DOBs from document:')
-        print(DOBs)
+        printf('List of possible DOBs from document:', DOBs)
 
         # Strip master dataframe of all commas after most processing has been done.
         comma_free_df = ocr.strip_df_commas(ocr_df)
-
+        printf('comma_free_df',comma_free_df)
         name_list = ['Contrast Smailys', 'Stacey Lynn'] # This is for a demo. This list will be returned by a validate names function.
         name_cand_dict = ocr.create_name_candidates(name_list, comma_free_df)
         # Access confedence for the first instance of 'Contrast'
@@ -82,8 +79,9 @@ def main():
         hack_names = nlp.hack_extract_names(ocr_df)
 
         # Validate debug
+        printf('PHN LIST: ',PHNs)
         for phn in PHNs:
-            validate.phn_primary(patient_database, phn)
+            validate.phn_primary(comma_free_df, patient_database, phn)
         #printf('get_name_from_phn', searchHelp.get_name_from_phn(patient_database, phn))
         #printf('get_DOB_from_phn', searchHelp.get_dob_from_phn(patient_database, phn))
 

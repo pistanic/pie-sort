@@ -58,9 +58,9 @@ def get_dob_from_phn(df,phn):
     # INPUT: df = test database
     #        phn = personal helth number
     patient_df = find_in_df(df, 'PHN', phn)
-    year = patient_df['DOB-YYYY']
-    month = patient_df['DOB-MM']
-    day = patient_df['DOB-DD']
+    year = patient_df['DOB-YYYY'].values[0]
+    month = patient_df['DOB-MM'].values[0]
+    day = patient_df['DOB-DD'].values[0]
     return day + '/' + month + '/' + year
 
 
@@ -69,10 +69,9 @@ def get_name_from_phn(df, phn):
     #        name = 'First_name Last_Name' this could be list or string. Pick one
     #               that is easyer to impl.
     patient_df = find_in_df(df,'PHN',phn)
-    first_name = patient_df['First_Name']
-    last_name = patient_df['Last_Name']
+    first_name = patient_df['First_Name'].values[0]
+    last_name = patient_df['Last_Name'].values[0]
     return first_name + ' ' +last_name
-
 
 #Boolean function that determines if Searchvalue is in dataframe
 def is_in_df(df, column, searchValue):
