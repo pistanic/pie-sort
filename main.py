@@ -23,7 +23,6 @@ def main():
     IMG_DIR = TMP_DIR+'img/'
     TXT_DIR = TMP_DIR+'txt/'
 
-    # Preprocessing Stage
     file_list = docMan.get_file_list(PDF_DIR)
     for file_ in file_list:
 
@@ -31,6 +30,9 @@ def main():
         image_name = docMan.pdf2jpg((PDF_DIR+file_), IMG_DIR) # store image in IMG_DIR
         printf('image_name', image_name)
         img_path = IMG_DIR+image_name
+
+        # Preprocessing Stage
+        preproc.pre_process(img_path)
 
         # OCR Stage
         txt_path = TXT_DIR+image_name.replace('.jpg','.txt')
