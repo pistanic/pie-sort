@@ -1,6 +1,7 @@
 # NLP module to find patient identifiers from OCR
 import nltk
 import spacy
+from dateutil.parser import parse
 
 # ******* Libraries not in use *************
 #import stanfordnlp
@@ -26,19 +27,30 @@ def extract_PHN(ocr_df):
 
 # INPUT: ocr_df - pandas dataframe of document OCR
 # RETURN: possible_DOBs - list of possible date of births
-def extract_DOB(ocr_df): #TODO Need to utilize string OCR not df and develop rules to use with area of interest functions
-    # searches OCR dataframe and returns list of possible date of births for patient
+def extract_DOB(ocr_str): #TODO differentiate if 2019/01/05 is found from January 5th 2019 (good) or May 5th 2019 (bad)
+    # searches OCR dataframe and returns list of possible date of births for patient in ISO 8601 format (YYYY-MM-DD)
     nlp = spacy.load("en_core_web_sm")
+    unformatted_dates = []
     possible_DOBs = []
 
-    for i in range(0, ocr_df.shape[0] - 1):
-        word = nlp(ocr_df['text'].iloc[i])
-        for ent in word.ents:
-            if ent.label_ == 'DATE':
-                possible_DOBs.append(ocr_df['text'].iloc[i][0])
+    doc = nlp(ocr_str)
+
+    # use nlp to find dates in document
+    for ent in doc.ents:
+        if ent.label_ == 'DATE':
+            unformatted_dates.append(ent)
+
+    # convert unformatted dates to ISO 8601 format (YYYY-MM-DD) using EAFP practice (easier to ask forgiveness than permission)
+    for date in unformatted_dates:
+        try:
+            obj = parse(date.__str__())
+            formatted_date = obj.strftime("%Y-%m-%d")
+            possible_DOBs.append(formatted_date)
+
+        except ValueError:
+            print("'" + date + "' is not in a readable date format")
 
     return possible_DOBs
-
 
 # INPUT: ocr_df - pandas dataframe of document OCR
 # RETURN: possible_names - list of possible names
