@@ -30,6 +30,7 @@ def extract_string(img_path):
 def text_to_dataframe(text_path):
     # Extract txt file into pandas dataframe and returns dataframe
     df = pd.read_csv(text_path, sep='\t')
+    df = df.dropna()  # drop rows with text as nan
     #df.to_excel('tmp/ocr_data.xlsx') # Why do we need both? you can display csv with formatting.
     return df
 
@@ -92,5 +93,31 @@ def create_phn_candidates(phns, df):
 
     return phn_candidate_dict
 
+# INPUT: no_comma_df dataframe of ocr output with comma striped.
+#        name string - (first last)
+def look_for_name(no_comma_df, name):
+    print ('look_for_name debug: validating '+name)
+    first_last = name.split(' ', 1)
+    # Create a copy of the dataframe with rows shifted up one
+    no_comma_df["next_name"] = no_comma_df["text"].shift(1)
+    # Create a copy of the dataframe with rows shifted down one
+    no_comma_df["previous_name"] = no_comma_df["text"].shift(-1)
+    first_idx = no_comma_df.loc[no_comma_df['text'] == first_last[0]].index[0]
+    last_idx = no_comma_df.loc[no_comma_df['text'] == first_last[1]].index[0]
+    idx = [first_idx, last_idx]
+    names_df = no_comma_df.loc[idx,['text','next_name','previous_name']]
 
+    print(names_df)
+    for i in range(len(idx)):
+        text = names_df.loc[idx[i],'text']
+        next_name = names_df.loc[idx[i],'next_name']
+        lookup_name = text + ' ' + next_name
+        if (lookup_name == name):
+            print ('look_for_name debug: ' +name + " has been validated with: "+lookup_name)
+            return True
 
+        previous_name = names_df.loc[idx[i], 'previous_name']
+        lookup_name = text + ' ' + previous_name
+        if (lookup_name == name):
+            print ('look_for_name debug: ' +name + " has been validated with: "+lookup_name)
+            return True

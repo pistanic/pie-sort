@@ -3,7 +3,7 @@ import pandas as pd
 
 
 #Defines Search box area
-def DefineSearchBox(VerticalLocation, HorinzontalLocation, Width,Height):
+def define_search_box(VerticalLocation, HorinzontalLocation, Width,Height):
     SearchWidth = 50 #searches this width on either side
     SearchHeight = 50#searches this height on either side
 
@@ -28,7 +28,7 @@ def DefineSearchBox(VerticalLocation, HorinzontalLocation, Width,Height):
     return SearchBox
 
 #Returns New Dataframe with
-def ReturnInsideSearchBox(Searchbox,df):
+def return_inside_search_box(Searchbox,df):
     SearchResults = df.copy(deep=True)
 
 
@@ -47,15 +47,42 @@ def ReturnInsideSearchBox(Searchbox,df):
 
 
 #Finds values inside dataframe and returns dataframe
-def findInDataframe(df,column,value):
+def find_in_df(df,column,value):
     SimpleDataframe = df.copy(deep=True)
 
     SimpleDataframe = df.loc[df[column] == value]
 
     return SimpleDataframe
 
+def get_dob_from_phn(df,phn):
+    # INPUT: df = test database
+    #        phn = personal helth number
+    patient_df = find_in_df(df, 'PHN', phn)
+    year = patient_df['DOB-YYYY'].values[0]
+    month = patient_df['DOB-MM'].values[0]
+    day = patient_df['DOB-DD'].values[0]
+    return day + '/' + month + '/' + year
+
+
+def get_name_from_phn(df, phn):
+    # INPUT: df = test database
+    #        name = 'First_name Last_Name' this could be list or string. Pick one
+    #               that is easyer to impl.
+    patient_df = find_in_df(df,'PHN',phn)
+    first_name = patient_df['First_Name'].values[0]
+    last_name = patient_df['Last_Name'].values[0]
+    return first_name + ' ' +last_name
+
+#Boolean function that determines if Searchvalue is in dataframe
+def is_in_df(df, column, searchValue):
+    result_df = find_in_df(df, column, searchValue)
+    if(result_df.empty):
+        return False
+    else:
+        return True
+
 #Initialized patient dataframe for patients in given database
-def init_TestPatientsDataFrame():
+def init_test_db():
     # First Name/Middle Name/Middle Name/Last Name/PHN/DOB-YYYY/DOB-MM/DOB-DD/FILE PATH
     # Patients in test images
     patient1 = ['Cowan', 'A', 'Wood', '1742791', '1967', '06', '13','Editted Holter 2.pdf']
@@ -77,6 +104,6 @@ def init_TestPatientsDataFrame():
     patient15 = ['Terry', 'Perry', 'Jerry', '111111111', '1999', '03', '02','Not Assigned']
     patient16 = ['Terry', 'Gary', 'Lary', '222222222', '1999', '04', '02','Not Assigned']
     patient17 = ['Ferry', 'Dairy', 'Kerry', '3333333333', '1999', '05', '02','Not Assigned']
-    df = pd.DataFrame(np.array([patient1, patient2, patient3, patient4, patient5, patient6,patient7,patient8,patient9,patient10,patient11,patient12,patient13,patient14,patient15,patient16,patient17]),columns=['First_Name', 'Middle_Name', 'Last_Name', 'PHN', 'DOB-YYY', 'DOB-MM', 'DOB-DD','Filepath'])
+    df = pd.DataFrame(np.array([patient1, patient2, patient3, patient4, patient5, patient6,patient7,patient8,patient9,patient10,patient11,patient12,patient13,patient14,patient15,patient16,patient17]),columns=['First_Name', 'Middle_Name', 'Last_Name', 'PHN', 'DOB-YYYY', 'DOB-MM', 'DOB-DD','Filepath'])
 
     return df
