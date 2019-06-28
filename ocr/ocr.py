@@ -133,7 +133,6 @@ def look_for_name(formatted_df, name):
     idx = [first_idx, last_idx]
     names_df = formatted_df.loc[idx,['text','next_name','previous_name']]
 
-    print(names_df)
     for i in range(len(idx)):
         text = names_df.loc[idx[i],'text']
         next_name = names_df.loc[idx[i],'next_name']

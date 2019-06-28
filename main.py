@@ -47,7 +47,7 @@ def main():
         # AOI Masking Demo
         searchbox = searchHelp.define_search_box(850,500,850,500)# find values centered at pixels (X=850,Y=500) in a box with a width of +/-850 and height of +/-500
         aoi_df =searchHelp.return_inside_search_box(searchbox,ocr_df)
-        printf('Area of Interest Dataframe',aoi_df)
+        printf('Area of Interest Dataframe', aoi_df)
 
         # NLP Stage
         # Create list of possible PHNs for patient
@@ -64,7 +64,7 @@ def main():
 
         # Strip master dataframe of all commas after most processing has been done.
         formatted_df = ocr.format_df(ocr_df)
-        printf('Formatted data frame', formatted_df)
+        #printf('Formatted data frame', formatted_df)
 
         #Access confedence for the first instance of 'Contrast'
         #name_cand_dict[<Key>][<First/Last>][instance][data]
@@ -73,7 +73,8 @@ def main():
         # Validate debug
         printf('PHN LIST: ',PHNs)
         for phn in PHNs:
-            validate.phn_primary(formatted_df, patient_database, phn)
+            validate.phn_primary(formatted_df, ocr_str, patient_database, phn)
+
 
 
 

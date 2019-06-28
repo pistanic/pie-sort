@@ -52,7 +52,6 @@ def extract_DOB(ocr_str): #TODO differentiate if 2019/01/05 is found from Januar
     # convert unformatted dates to ISO 8601 format (YYYY-MM-DD) using EAFP practice (easier to ask forgiveness than permission)
     for date in unformatted_dates:
         try:
-            print(date)
             obj = parse(date.__str__())
             formatted_date = obj.strftime("%Y-%m-%d")
             possible_DOBs.append(formatted_date)

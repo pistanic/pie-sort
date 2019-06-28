@@ -63,26 +63,26 @@ def find_in_df(df,column,value):
 
     return SimpleDataframe
 
-# INPUT: df - Dataframe to search
+# INPUT: df - database to search
 #        phn - personal health number to look up
 # OUTPUT: DOB string.
-def get_dob_from_phn(df,phn):
+def get_dob_from_phn(db,phn):
     # INPUT: df = test database
     #        phn = personal helth number
-    patient_df = find_in_df(df, 'PHN', phn)
+    patient_df = find_in_df(db, 'PHN', phn)
     year = patient_df['DOB-YYYY'].values[0]
     month = patient_df['DOB-MM'].values[0]
     day = patient_df['DOB-DD'].values[0]
-    return day + '/' + month + '/' + year
+    return year + '-' + month + '-' + day
 
-# INPUT: df - Dataframe to search
+# INPUT: df - database to search
 #        phn - personal health number to look up
 # OUTPUT: first and last name string.
-def get_name_from_phn(df, phn):
+def get_name_from_phn(db, phn):
     # INPUT: df = test database
     #        name = 'First_name Last_Name' this could be list or string. Pick one
     #               that is easyer to impl.
-    patient_df = find_in_df(df,'PHN',phn)
+    patient_df = find_in_df(db,'PHN',phn)
     first_name = patient_df['First_Name'].values[0]
     last_name = patient_df['Last_Name'].values[0]
     return first_name + ' ' +last_name
