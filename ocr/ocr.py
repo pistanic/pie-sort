@@ -1,3 +1,11 @@
+#################################################################
+#                                                               #
+# Copyright 2019 All rights reserved.                           #
+# Author: David Cheng                                           #
+# Co-Authors: Nicholas Forest                                   #
+#                                                               #
+#################################################################
+
 import pytesseract
 import csv
 import pandas as pd

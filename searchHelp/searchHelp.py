@@ -1,3 +1,11 @@
+#################################################################
+#                                                               #
+# Copyright 2019 All rights reserved.                           #
+# Author: Jake Mawdsley                                         #
+# Co-Authors: Nicholas Forest                                   #
+#                                                               #
+#################################################################
+
 import numpy as np
 import pandas as pd
 

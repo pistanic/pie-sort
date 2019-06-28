@@ -1,3 +1,11 @@
+#################################################################
+#                                                               #
+# Copyright 2019 All rights reserved.                           #
+# Author: Nicholas Forest                                       #
+# Co-Authors:                                                   #
+#                                                               #
+#################################################################
+
 # Helper functions to make reading candidate tables easier
 def first_name():
     return 0

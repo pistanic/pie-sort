@@ -1,3 +1,11 @@
+#################################################################
+#                                                               #
+# Copyright 2019 All rights reserved.                           #
+# Author: Nicholas Forest                                       #
+# Co-Authors:                                                   #
+#                                                               #
+#################################################################
+
 # Document Managment module.
 import tempfile
 from os import listdir, remove

@@ -1,3 +1,11 @@
+#################################################################
+#                                                               #
+# Copyright 2019 All rights reserved.                           #
+# Author: David Cheng                                           #
+# Co-Authors:                                                   #
+#                                                               #
+#################################################################
+
 # NLP module to find patient identifiers from OCR
 import nltk
 import spacy

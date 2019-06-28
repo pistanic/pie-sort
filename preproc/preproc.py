@@ -1,3 +1,11 @@
+#################################################################
+#                                                               #
+# Copyright 2019 All rights reserved.                           #
+# Author: Siddharth Verma                                       #
+# Co-Authors:                                                   #
+#                                                               #
+#################################################################
+
 # Preprocessing functions to prepare pdf for ocr/nlp
 
 import cv2
