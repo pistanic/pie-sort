@@ -1,8 +1,21 @@
+#################################################################
+#                                                               #
+# Copyright 2019 All rights reserved.                           #
+# Author: Jake Mawdsley                                         #
+# Co-Authors: Nicholas Forest                                   #
+#                                                               #
+#################################################################
+
 import numpy as np
 import pandas as pd
 
 
-#Defines Search box area
+# INPUT: VerticalLocation -
+#        HorizontalLocation -
+#        Width -
+#        Height -
+# OUTPUT: SearchBox -
+# DESCRIPTION:
 def define_search_box(VerticalLocation, HorinzontalLocation, Width,Height):
     SearchWidth = 50 #searches this width on either side
     SearchHeight = 50#searches this height on either side
@@ -27,10 +40,12 @@ def define_search_box(VerticalLocation, HorinzontalLocation, Width,Height):
 
     return SearchBox
 
-#Returns New Dataframe with
+# INPUT: Searchbox -
+#        df -
+# OUTPUT: SearchResults
+# DESCRIPTION:
 def return_inside_search_box(Searchbox,df):
     SearchResults = df.copy(deep=True)
-
 
     leftBound=Searchbox[0]
     rightBound=Searchbox[0]+Searchbox[2]
@@ -45,7 +60,10 @@ def return_inside_search_box(Searchbox,df):
 
     return SearchResults
 
-
+# INPUT: df - Datafame to searh
+#        column - column to search
+#        value - value to look up
+# OUTPUT: dataframe of found values
 #Finds values inside dataframe and returns dataframe
 def find_in_df(df,column,value):
     SimpleDataframe = df.copy(deep=True)
@@ -54,6 +72,9 @@ def find_in_df(df,column,value):
 
     return SimpleDataframe
 
+# INPUT: df - Dataframe to search
+#        phn - personal health number to look up
+# OUTPUT: DOB string.
 def get_dob_from_phn(df,phn):
     # INPUT: df = test database
     #        phn = personal helth number
@@ -63,7 +84,9 @@ def get_dob_from_phn(df,phn):
     day = patient_df['DOB-DD'].values[0]
     return day + '/' + month + '/' + year
 
-
+# INPUT: df - Dataframe to search
+#        phn - personal health number to look up
+# OUTPUT: first and last name string.
 def get_name_from_phn(df, phn):
     # INPUT: df = test database
     #        name = 'First_name Last_Name' this could be list or string. Pick one
@@ -73,6 +96,10 @@ def get_name_from_phn(df, phn):
     last_name = patient_df['Last_Name'].values[0]
     return first_name + ' ' +last_name
 
+# INPUT: df - Dataframe to search
+#        column - Dataframe column descriptor
+#        searchValue - value to loacate in dataframe.
+# OUTPUT: True if value is in dataframe
 #Boolean function that determines if Searchvalue is in dataframe
 def is_in_df(df, column, searchValue):
     result_df = find_in_df(df, column, searchValue)
@@ -81,6 +108,8 @@ def is_in_df(df, column, searchValue):
     else:
         return True
 
+# OUTPUT: Validation database
+# DESCRIPTION: Create the database used for validation of test files.
 #Initialized patient dataframe for patients in given database
 def init_test_db():
     # First Name/Middle Name/Middle Name/Last Name/PHN/DOB-YYYY/DOB-MM/DOB-DD/FILE PATH

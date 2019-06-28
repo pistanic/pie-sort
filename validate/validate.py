@@ -1,6 +1,19 @@
+#################################################################
+#                                                               #
+# Copyright 2019 All rights reserved.                           #
+# Author: Nicholas Forest                                       #
+# Co-Authors:                                                   #
+#                                                               #
+#################################################################
+
 import searchHelp
 import ocr
 
+# INPUT: ocr_df - formatted dataframe of ocr data.
+#        database - dataframe of the verification database.
+#        phn - Personal Health number for verification.
+# OUTPUT: success_flag - true if the name or dob have been verified against the phn.
+# DESCRIPTION: This function searchs for the name and DOB in the database given a phn.
 def phn_primary(ocr_df, database, phn):
     success_flag = False
 
@@ -13,7 +26,7 @@ def phn_primary(ocr_df, database, phn):
 
     name = searchHelp.get_name_from_phn(database, phn)
     if ocr.look_for_name(ocr_df, name):
-        print('phn_primary debug: name validated')
+        print('phn_primary debug - name validated')
         success_flag = True
 
     return success_flag
