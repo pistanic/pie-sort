@@ -20,7 +20,7 @@ from PIL import Image, ImageEnhance, ImageFilter
 #        txt_path - path to text file that tesseract will write data to.
 # RETURN: pandas dataframe created from csv file.
 def extract_text(img_path, txt_path):
-     # returns text from image in form as string and then converts string into Pandas dataframe
+    # returns text from image in form as string and then converts string into Pandas dataframe
     text = pytesseract.image_to_data(Image.open(img_path)) # Tesseract OCR
     # Write tab delimited string into txt file
     file = open(txt_path, 'w')
@@ -36,7 +36,7 @@ def extract_string(img_path):
 # RETURN: pandas dataframe created from csv file.
 def text_to_dataframe(text_path):
     # Extract txt file into pandas dataframe and returns dataframe
-    df = pd.read_csv(text_path, sep='\t')
+    df = pd.read_csv(text_path, sep='\t',engine='python',quotechar="'"or'"')
     df = df.dropna()  # drop rows with text as nan
     #df.to_excel('tmp/ocr_data.xlsx') # Why do we need both? you can display csv with formatting.
     return df
