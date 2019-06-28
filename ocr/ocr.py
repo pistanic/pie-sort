@@ -38,7 +38,7 @@ def extract_string(img_path):
 # OUTPUT: pandas dataframe created from csv file.
 def text_to_dataframe(text_path):
     # Extract txt file into pandas dataframe and returns dataframe
-    df = pd.read_csv(text_path, sep='\t')
+    df = pd.read_csv(text_path, sep='\t',engine='python',quotechar="'"or'"')
     df = df.dropna()  # drop rows with text as nan
     #df.to_excel('tmp/ocr_data.xlsx') # Why do we need both? you can display csv with formatting.
     return df
