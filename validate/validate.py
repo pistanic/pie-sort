@@ -26,7 +26,7 @@ def phn_primary(ocr_df, database, phn):
 
     name = searchHelp.get_name_from_phn(database, phn)
     if ocr.look_for_name(ocr_df, name):
-        print('phn_primary debug: name validated')
+        print('phn_primary debug - name validated')
         success_flag = True
 
     return success_flag

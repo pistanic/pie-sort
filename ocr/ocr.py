@@ -114,7 +114,7 @@ def create_phn_candidates(phns, formatted_df):
 # OUTPUT: success flag if name is found in ocr data
 # DESCRIPTION:
 def look_for_name(formatted_df, name):
-    print ('look_for_name debug: validating '+name)
+    print ('look_for_name debug - validating '+name)
     first_last = name.split(' ', 1)
 
     # Create a copy of the dataframe with rows shifted up one
@@ -133,11 +133,11 @@ def look_for_name(formatted_df, name):
         next_name = names_df.loc[idx[i],'next_name']
         lookup_name = text + ' ' + next_name
         if (lookup_name == name):
-            print ('look_for_name debug: ' +name + " has been validated with: "+lookup_name)
+            print ('look_for_name debug - ' +name + " has been validated with: "+lookup_name)
             return True
 
         previous_name = names_df.loc[idx[i], 'previous_name']
         lookup_name = text + ' ' + previous_name
         if (lookup_name == name):
-            print ('look_for_name debug: ' +name + " has been validated with: "+lookup_name)
+            print ('look_for_name debug - ' +name + " has been validated with: "+lookup_name)
             return True

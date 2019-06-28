@@ -13,7 +13,8 @@ import cv2
 from PIL import Image
 
 # INPUT: Path of Image
-# RETURN: Overwrite original image
+# OUTPUT: Overwrite original image
+# DESCRIPTION: Filter image.
 def pre_process(ImagePath):
 
     Image.MAX_IMAGE_PIXELS = None                                   #remove pixel limit for the Image library

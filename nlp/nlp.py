@@ -18,7 +18,7 @@ from dateutil.parser import parse
 #stop = stopwords.words('english')
 
 # INPUT: ocr_df - pandas dataframe of document OCR
-# RETURN: possible_names - list of possible names
+# OUTPUT: possible_names - list of possible names
 def extract_PHN(ocr_df):
     # searches OCR dataframe and returns list of PHNs for patient
     possible_PHNs = []
@@ -34,7 +34,7 @@ def extract_PHN(ocr_df):
     return possible_PHNs
 
 # INPUT: ocr_df - pandas dataframe of document OCR
-# RETURN: possible_DOBs - list of possible date of births
+# OUTPUT: possible_DOBs - list of possible date of births
 def extract_DOB(ocr_str): #TODO differentiate if 2019/01/05 is found from January 5th 2019 (good) or May 5th 2019 (bad)
     # searches OCR dataframe and returns list of possible date of births for patient in ISO 8601 format (YYYY-MM-DD)
     nlp = spacy.load("en_core_web_sm")
@@ -56,12 +56,12 @@ def extract_DOB(ocr_str): #TODO differentiate if 2019/01/05 is found from Januar
             formatted_date = obj.strftime("%Y-%m-%d")
             possible_DOBs.append(formatted_date)
         except ValueError:
-            print("'" + date.__str__() + "' is not in a readable date format")
+            print("extract_DOB debug - '" + date.__str__() + "' is not in a readable date format")
 
     return possible_DOBs
 
 # INPUT: ocr_df - pandas dataframe of document OCR
-# RETURN: possible_names - list of possible names
+# OUTPUT: possible_names - list of possible names
 def hack_extract_names(ocr_df):
     # searches OCR dataframe and returns list of names for patient
     # HACK METHOD BECAUSE FUNCTION WILL FAIL IF ALL TEXT ARE UPPERCASE
