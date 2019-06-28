@@ -9,6 +9,11 @@
 import searchHelp
 import ocr
 
+# INPUT: ocr_df - formatted dataframe of ocr data.
+#        database - dataframe of the verification database.
+#        phn - Personal Health number for verification.
+# OUTPUT: success_flag - true if the name or dob have been verified against the phn.
+# DESCRIPTION: This function searchs for the name and DOB in the database given a phn.
 def phn_primary(ocr_df, database, phn):
     success_flag = False
 
