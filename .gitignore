@@ -1,2 +1,10 @@
+#ignore documents
+PDF/*
+#ignore tmp folder
+tmp/*
+#ignore venv
+venv/*
 #ignore pycache files
 *__pycache__*
+#ignore .pyc files
+*.pyc
