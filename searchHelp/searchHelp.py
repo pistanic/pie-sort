@@ -10,40 +10,31 @@ import numpy as np
 import pandas as pd
 
 
-# INPUT: VerticalLocation -
-#        HorizontalLocation -
-#        Width -
-#        Height -
-# OUTPUT: SearchBox -
-# DESCRIPTION:
-def define_search_box(VerticalLocation, HorinzontalLocation, Width,Height):
-    SearchWidth = 50 #searches this width on either side
-    SearchHeight = 50#searches this height on either side
+# INPUT: HorizontalLocation - Horizontal Center of Search Box (Pixels)
+#        VerticalLocation - Vertical Center of Search Box (Pixels)
+#        Width - Total width of search box (ie: for 30 pixels it will search 30 pixels left and 30 pixels right of the center)
+#        Height -Total Height of search box (ie: for 30 pixels it will search 30 pixels up and 30 pixels down of the center)
+# OUTPUT: SearchBox - outputs searchbox array
+# DESCRIPTION: Function defines searchbox to be used in "return_inside_search_box" function.
+def define_search_box(HorinzontalLocation,VerticalLocation, Width,Height):
+    # sets location to follow dataframe notation. top/left as location info
+    SearchBox_Left_Location = HorinzontalLocation-Width# left bound of search box
+    SearchBox_Top_Location = VerticalLocation-Height# upper bound of search box
 
+    #Sets search to extend either side of center by X pixels
+    SearchBox_Width = 2*Width
+    SearchBox_Height = 2*Height
 
-    #Checks to ensure box isnt out of bounds, sets box location to
-    if((VerticalLocation-SearchHeight)<0):
-        SearchBox_Vertical_Location = 0
-    else:
-        SearchBox_Vertical_Location = VerticalLocation - SearchHeight
-
-    if ((HorinzontalLocation - SearchWidth) < 0):
-        SearchBox_Horizontal_Location = 0
-    else:
-        SearchBox_Horizontal_Location = VerticalLocation - SearchWidth
-
-    #Sets search to extend either side of origial box by X pixels
-    SearchBox_Width = Width + SearchWidth*2
-    SearchBox_Height = Height +SearchHeight*2
-
-    SearchBox = np.array([SearchBox_Vertical_Location,SearchBox_Horizontal_Location, SearchBox_Width,SearchBox_Height])
+    SearchBox = np.array([SearchBox_Left_Location,SearchBox_Top_Location, SearchBox_Width,SearchBox_Height])
 
     return SearchBox
 
-# INPUT: Searchbox -
-#        df -
-# OUTPUT: SearchResults
-# DESCRIPTION:
+# INPUT: Searchbox - Numpy Array of [SearchBox_Left_Location,SearchBox_Top_Location, SearchBox_Width,SearchBox_Height]
+#        df -  OCR dataframe output
+# OUTPUT: SearchResults - New Dataframe of contents within search box
+# DESCRIPTION: Takes in Search box which defines the top left corner of the search box and the width and height.
+#              Then finds contents within the search box and returns news Dataframe with contents.
+#              Note: function defines "Within search box" as the center of the text box.
 def return_inside_search_box(Searchbox,df):
     SearchResults = df.copy(deep=True)
 
@@ -52,11 +43,11 @@ def return_inside_search_box(Searchbox,df):
     upBound=Searchbox[1]
     bottomBound=Searchbox[1]+Searchbox[3]
 
-    #Finds datapoints that have location origin within SearchBox
-    SearchResults = SearchResults.loc[SearchResults['left'] > leftBound]
-    SearchResults = SearchResults.loc[SearchResults['left'] < rightBound]
-    SearchResults = SearchResults.loc[SearchResults['top'] > upBound]
-    SearchResults = SearchResults.loc[SearchResults['top'] < bottomBound]
+    #Finds datapoints that have location center within SearchBox
+    SearchResults = SearchResults.loc[(SearchResults['left']-SearchResults['width']/2) > leftBound]
+    SearchResults = SearchResults.loc[(SearchResults['left']-SearchResults['width']/2) < rightBound]
+    SearchResults = SearchResults.loc[(SearchResults['top']-SearchResults['height']/2) > upBound]
+    SearchResults = SearchResults.loc[(SearchResults['top']-SearchResults['height']/2) < bottomBound]
 
     return SearchResults
 

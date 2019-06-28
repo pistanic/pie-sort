@@ -44,6 +44,11 @@ def main():
         ocr_df = ocr.text_to_dataframe(txt_path)
         ocr_str = ocr.extract_string(img_path)
 
+        # AOI Masking Demo
+        searchbox = searchHelp.define_search_box(850,500,850,500)# find values centered at pixels (X=850,Y=500) in a box with a width of +/-850 and height of +/-500
+        aoi_df =searchHelp.return_inside_search_box(searchbox,ocr_df)
+        printf('Area of Interest Dataframe',aoi_df)
+
         # NLP Stage
         # Create list of possible PHNs for patient
         PHNs = nlp.extract_PHN(ocr_df)
