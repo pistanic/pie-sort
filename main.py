@@ -9,7 +9,7 @@ import validate
 def printf(name, value):
     print('+------------------------------------------------------------+')
     print('  Main Debug - '+name+':')
-    print(value)
+    print(' '+str(value))
     print('+------------------------------------------------------------+')
 
 
@@ -25,7 +25,8 @@ def main():
     printf('patient_database',patient_database)
 
     file_list = docMan.get_file_list(PDF_DIR)
-
+    # Validation Counter
+    num_val_docs = 0
     for file_ in file_list:
         # Print processing file
         printf('file_ in file_list', file_)
@@ -35,7 +36,7 @@ def main():
         img_path = IMG_DIR+image_name
 
         # Preprocessing Stage
-        preproc.pre_process(img_path)
+        #preproc.pre_process(img_path)
 
         # OCR Stage
         txt_path = TXT_DIR+image_name.replace('.jpg','.txt')
@@ -73,8 +74,12 @@ def main():
         # Validate debug
         printf('PHN LIST: ',PHNs)
         for phn in PHNs:
-            validate.phn_primary(formatted_df, ocr_str, patient_database, phn)
+            if validate.phn_primary(formatted_df, ocr_str, patient_database, phn):
+                num_val_docs += 1
 
+
+    printf('Number of Validated Documents out of '+str(len(file_list)),num_val_docs)
+    printf('Accuracy', (num_val_docs/len(file_list)))
 
 
 
