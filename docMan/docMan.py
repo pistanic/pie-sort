@@ -8,8 +8,8 @@
 
 # Document Managment module.
 import tempfile
-from os import listdir, remove
-from os.path import isfile, join, splitext, basename
+from os import listdir, remove,makedirs
+from os.path import isfile, join, splitext, basename, exists
 from shutil import rmtree
 from pdf2image import convert_from_path
 
@@ -41,8 +41,19 @@ def pdf2jpg(pdf_path, jpg_path):
     with tempfile.TemporaryDirectory() as path:
         images_from_path = convert_from_path(pdf_path, dpi=200, output_folder=path) #PDF to PIL image output
 
-    base_filename = splitext(basename(pdf_path))[0]+ '.jpg'
+    base_filename = splitext(basename(pdf_path))[0]
+
+    try:
+        makedirs(join(jpg_path, base_filename))
+    except:
+        print('Directory already exists')
+
+    i = 1
     for page in images_from_path:
-        page.save(join(jpg_path, base_filename), 'JPEG')
+
+        page.save(join(jpg_path,base_filename,base_filename +'_page'+str(i)+'.jpg'), 'JPEG')
+        i = i + 1
+
+    print('xxxxxxxxxxxxxxxxxxxxx-----',base_filename)
 
     return base_filename
