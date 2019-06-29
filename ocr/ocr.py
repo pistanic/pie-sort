@@ -33,7 +33,9 @@ def extract_text(img_path, txt_path):
 # OUTPUT: pandas dataframe created from csv file
 # DESCRIPTION: read tab delimited csv text file of OCR data and returns as pandas dataframe.
 def text_to_dataframe(text_path):
-    ocr_df = pd.read_csv(text_path, sep='\t',engine='python',quotechar="'"or'"')
+    ocr_df = pd.read_csv(text_path, sep='\t',engine='python',quotechar="'"or'"', error_bad_lines=False)
+    # WARNGIN!!
+    # error_bad_lines might be a hack that needs investigation
     ocr_df = ocr_df.dropna()  # drop rows with text as nan
     return ocr_df
 
