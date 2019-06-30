@@ -36,7 +36,7 @@ def main():
         img_path = IMG_DIR+image_name
 
         # Preprocessing Stage
-        #preproc.pre_process(img_path)
+        preproc.pre_process(img_path)
 
         # OCR Stage
         txt_path = TXT_DIR+image_name.replace('.jpg','.txt')
@@ -46,8 +46,8 @@ def main():
         ocr_str = ocr.extract_string(img_path)
 
         # AOI Masking Demo
-        searchbox = searchHelp.define_search_box(850,500,850,500)# find values centered at pixels (X=850,Y=500) in a box with a width of +/-850 and height of +/-500
-        aoi_df =searchHelp.return_inside_search_box(searchbox,ocr_df)
+        PHN_AOI_demo = 'Sidney'
+        aoi_df = searchHelp.PHN_Document_Box_Search(PHN_AOI_demo,ocr_df,500,500)
         printf('Area of Interest Dataframe', aoi_df)
 
         # NLP Stage

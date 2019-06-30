@@ -44,12 +44,47 @@ def return_inside_search_box(Searchbox,df):
     bottomBound=Searchbox[1]+Searchbox[3]
 
     #Finds datapoints that have location center within SearchBox
-    SearchResults = SearchResults.loc[(SearchResults['left']-SearchResults['width']/2) > leftBound]
-    SearchResults = SearchResults.loc[(SearchResults['left']-SearchResults['width']/2) < rightBound]
-    SearchResults = SearchResults.loc[(SearchResults['top']-SearchResults['height']/2) > upBound]
-    SearchResults = SearchResults.loc[(SearchResults['top']-SearchResults['height']/2) < bottomBound]
+    SearchResults = SearchResults.loc[(SearchResults['left']+SearchResults['width']/2) > leftBound]
+    SearchResults = SearchResults.loc[(SearchResults['left']+SearchResults['width']/2) < rightBound]
+    SearchResults = SearchResults.loc[(SearchResults['top']+SearchResults['height']/2) > upBound]
+    SearchResults = SearchResults.loc[(SearchResults['top']+SearchResults['height']/2) < bottomBound]
 
     return SearchResults
+
+# INPUT: PHN - PHN that will be searched
+#        df - OCR dataframe output
+#        search_width - search box width (pixels)
+#        search_height - search box height (pixels)
+# OUTPUT: Outputs OCR dataframe
+# DESCRIPTION: Finds values in searchbox centered around inputted PHN
+def PHN_Document_Box_Search(PHN,df,search_width,search_height):
+    #copy dataframe
+    search_df = df.copy(deep=True)
+
+    #Create PHN search dataframe (contains info related to search, location, width, height)
+    PHN_df = find_in_df(search_df,'text',PHN)
+    PHN_df = PHN_df.reset_index(drop=True)
+
+    #define empty result dataframe
+    complete_search_result_df = pd.DataFrame().reindex_like(df)
+
+    for index, row in PHN_df.iterrows():
+        #Define center of word box
+        PHN_Horizontal_center = PHN_df.at[index,'left'] + (PHN_df.at[index,'width'])/2
+        PHN_Vertical_center = PHN_df.at[index,'top'] + (PHN_df.at[index,'height'])/2
+
+        #define searchbox and return search results
+        searchbox = define_search_box(PHN_Horizontal_center,PHN_Vertical_center,search_width,search_height)
+        search_result_df = return_inside_search_box(searchbox,search_df)
+
+        #Merge new results into complete dataframe, drop duplicate rows
+        complete_search_result_df = pd.concat([search_result_df,complete_search_result_df])
+        complete_search_result_df = complete_search_result_df.drop_duplicates()
+
+    #delete rows with all Nan values
+    complete_search_result_df = complete_search_result_df.dropna(how='all')
+
+    return complete_search_result_df
 
 # INPUT: df - Datafame to searh
 #        column - column to search
