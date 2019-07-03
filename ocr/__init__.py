@@ -1,2 +1,8 @@
-# Import simple_ocr function from ocr.py
-from .ocr import simple_ocr
+# Import functions from ocr.py
+from .ocr import extract_text
+from .ocr import extract_string
+from .ocr import text_to_dataframe
+from .ocr import format_df
+from .ocr import create_name_candidates
+from .ocr import look_for_name
+
