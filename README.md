@@ -12,14 +12,14 @@ Pie-sort's aim is to automate the process of merging scanned documents into medi
 This accomplished by using OCR and NLP libraries to extract names, PHNs (Personal Health Numbers) and 
 DOB (Date of Birth) from scanned documents and match them to current patient databases. 
 
-#Technologies
+# Technologies
 Project is created with:  
 * Python 3.7  
 * pytesseract (0.2.6)  
 * NLTK (3.4.3)  
 * spaCey (2.1.4)
 
-#How it works
+# How it works
 1. To run this program locally install by cloning basic pipeline repository
     ```shell
     git clone -b basic https://github.com/pistanic/pie-sort.git
@@ -31,18 +31,18 @@ Project is created with:
 patient database defined in "searchHelp" module and output validated patients to the terminal.
  
 
-#Project Status
+# Project Status
  The basic pipeline is a simple verification algorithm, which uses the 
  Hello World pipeline with the addition of image preprocessing and a 
  PHN verification. This pipeline provides a level of 
  pipeline accuracy and success that will be improved upon in the future pipelines.
  
 
-#Authors
+# Authors
 **Nicholas Forest** - [Pistanic](https://github.com/pistanic)  
 **Jakob Mawdsley** - [JollyJellyBean](https://github.com/JollyJellyBean)  
 **David Cheng** - [ChengDave](https://github.com/ChengDave)  
 **Siddharth Verma** - [SidVerma27](https://github.com/sidverma27)
 
-#License
+# License
 This program is released under the GPLV3 license
