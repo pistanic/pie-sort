@@ -128,8 +128,20 @@ def look_for_name(formatted_df, name):
 
     # Create a copy of the dataframe with rows shifted down one
     formatted_df["previous_name"] = formatted_df["text"].shift(-1)
-    first_idx = formatted_df.loc[formatted_df['text'] == first_last[0]].index[0]
-    last_idx = formatted_df.loc[formatted_df['text'] == first_last[1]].index[0]
+
+    # find index of first name. if not found, return false
+    first_idx_df = formatted_df.loc[formatted_df['text'] == first_last[0]]
+    if(first_idx_df.empty):
+        return False
+    first_idx = first_idx_df.index[0]
+
+    # find index of last name. if not found, return false
+    last_idx_df = formatted_df.loc[formatted_df['text'] == first_last[1]]
+    if (last_idx_df.empty):
+        return False
+    last_idx = last_idx_df.index[0]
+
+    # index of first and last name
     idx = [first_idx, last_idx]
     names_df = formatted_df.loc[idx,['text','next_name','previous_name']]
 
