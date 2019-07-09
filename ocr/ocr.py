@@ -12,6 +12,7 @@ import pandas as pd
 import os
 import time
 import numpy as np
+import docMan
 
 from PIL import Image, ImageEnhance, ImageFilter
 
@@ -22,26 +23,43 @@ from PIL import Image, ImageEnhance, ImageFilter
 # OUTPUT: None
 # DESCRIPTION: writes OCR data to a text file in form of tab delimited csv.
 def extract_text(img_path, txt_path):
-    text = pytesseract.image_to_data(Image.open(img_path)) # Tesseract OCR
-    # Write tab delimited string into txt file
-    file = open(txt_path, 'w')
-    file.write(text)
-    file.close
+    file_list = docMan.get_file_list(img_path)
+    file_list.sort()
+    i = 1
+    for file_ in file_list:
+        text = pytesseract.image_to_data(Image.open(img_path+'/'+file_)) # Tesseract OCR
+        # Write tab delimited string into txt file
+        file = open(txt_path+'/'+file_.replace('.jpg','.txt'), 'w')
+        file.write(text)
+        file.close
 
 
 # INPUT: text_path - path to csv data
 # OUTPUT: pandas dataframe created from csv file
 # DESCRIPTION: read tab delimited csv text file of OCR data and returns as pandas dataframe.
 def text_to_dataframe(text_path):
-    ocr_df = pd.read_csv(text_path, sep='\t', engine='python', quoting=csv.QUOTE_NONE, encoding='utf-8')
-    ocr_df = ocr_df.dropna()  # drop rows with text as nan
-    return ocr_df
+    file_list = docMan.get_file_list(text_path)
+    file_list.sort()
+    dataframe_list = []
+    for file_ in file_list:
+
+        ocr_df = pd.read_csv(text_path+'/'+file_, sep='\t', engine='python', quoting=csv.QUOTE_NONE, encoding='utf-8')
+        ocr_df = ocr_df.dropna()  # drop rows with text as nan
+        dataframe_list.append(ocr_df)
+    ocr_df_Final = pd.concat(dataframe_list, ignore_index=True)
+    return ocr_df_Final
 
 # INPUT: img_path - path to image that tesseract will process
 # OUTPUT: text - string of ocr data
 # DESCRIPTION: returns text from image in form as string
 def extract_string(img_path):
-    text = pytesseract.image_to_string(Image.open(img_path))  # Tesseract OCR)
+
+
+    file_list = docMan.get_file_list(img_path)
+    file_list.sort()
+    text = ''
+    for file_ in file_list:
+        text = text + pytesseract.image_to_string(Image.open(img_path+'/'+file_)) + ' '      # Tesseract OCR)
     return text
 
 # INPUT: dataframe
