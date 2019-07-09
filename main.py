@@ -5,6 +5,7 @@ import ezRead
 import docMan # four source see: docMan/
 import searchHelp
 import validate
+from os import makedirs
 
 def printf(name, value):
     print('+------------------------------------------------------------+')
@@ -32,14 +33,23 @@ def main():
         printf('file_ in file_list', file_)
         image_name = docMan.pdf2jpg((PDF_DIR+file_), IMG_DIR) # store image in IMG_DIR
         # Print processing Image name
-        printf('image_name', image_name)
+        print('image_name', image_name)
         img_path = IMG_DIR+image_name
 
         # Preprocessing Stage
-        preproc.pre_process(img_path)
+        img_path = preproc.pre_process(img_path)
 
         # OCR Stage
-        txt_path = TXT_DIR+image_name.replace('.jpg','.txt')
+        printf('************************######',TXT_DIR+image_name)
+
+        try:
+            makedirs(TXT_DIR+image_name.replace('.jpg',''))
+        except:
+           print('Text Directory already exists')
+
+        printf('TXT_DIR+image_name.replace(.jpg)',TXT_DIR+image_name.replace('.jpg',''))
+
+        txt_path = TXT_DIR+image_name.replace('.jpg','')
         printf('txt_path',txt_path)
         ocr.extract_text(img_path, txt_path)
         ocr_df = ocr.text_to_dataframe(txt_path)
