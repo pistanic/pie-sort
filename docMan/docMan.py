@@ -8,10 +8,12 @@
 
 # Document Managment module.
 import tempfile
-from os import listdir, remove,makedirs
-from os.path import isfile, join, splitext, basename, exists
+from datetime import datetime
+from os import listdir, remove, rename, makedirs
+from os.path import isfile, join, splitext, basename
 from shutil import rmtree
 from pdf2image import convert_from_path
+
 
 # INPUT: Path to files
 # OUTPUT: List of files in path
@@ -46,14 +48,46 @@ def pdf2jpg(pdf_path, jpg_path):
     try:
         makedirs(join(jpg_path, base_filename))
     except:
-        print('Directory already exists')
+        print('file directory already exists')
 
-    i = 1
-    for page in images_from_path:
-
-        page.save(join(jpg_path,base_filename,base_filename +'_page'+str(i)+'.jpg'), 'JPEG')
-        i = i + 1
+    for i, page in enumerate(images_from_path):
+        page.save(join(jpg_path,base_filename,base_filename +'_page'+str(i+1)+'.jpg'), 'JPEG')
 
     print('pdf2jpg debug - base_filename: ',base_filename)
 
     return base_filename
+
+# INPUT file_name: name of file
+#       sort_path: path file was sorted to
+# DESCRIPTION: Log the location a file was sorted to.
+# log file is placed in top dir of program execution
+def log(file_name, sort_path):
+    log_path = 'log/'+str(datetime.now().date())+'/'
+    try:
+        makedirs(log_path)
+    except:
+        print('log dir already exists')
+
+    log_file = log_path+'Verification-log.txt'
+    file = open(log_file, 'w')
+    file.write(file_name + ' sorted to: '+ sort_path+'\n')
+    file.close
+
+# INPUT source_path: path to file
+#       dist_path: destination path for file
+def sort(source_path, dist_path):
+    base_filename = splitext(basename(source_path))[0]+'.pdf'
+    dist_dir = dist_path.replace(base_filename,'') #strip filename
+    try:
+        makedirs(dist_dir)
+    except:
+        print('Patient dir already exists')
+    log(base_filename, dist_path)
+    rename(source_path, dist_path)
+
+
+# DEBUG FUNCTION:
+# This function is used to unsort documents.
+def un_sort(source_path, dist_path):
+    print('DEBUG! - PDF HAS BEEN RETURNED TO ORG LOCATION')
+    rename(source_path, dist_path)

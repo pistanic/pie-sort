@@ -18,6 +18,7 @@ def main():
     LOCAL_DIR = './'
     PDF_DIR = LOCAL_DIR+'PDF/'
     TMP_DIR = LOCAL_DIR+'tmp/'
+    SORT_DIR = LOCAL_DIR+'pd/'
     IMG_DIR = TMP_DIR+'img/'
     TXT_DIR = TMP_DIR+'txt/'
     patient_database = searchHelp.init_test_db()
@@ -88,14 +89,23 @@ def main():
         # Validate debug
         printf('PHN LIST: ',PHNs)
         validated = False;
+        valid_phn = 0;
         for phn in PHNs:
             if validate.phn_primary(formatted_df, ocr_str, patient_database, phn):
                 num_val_docs += 1
                 validated = True
+                valid_phn = phn
                 break
 
         if (validated):
-            validated_docs.append(file_)
+            dist_path = SORT_DIR+phn+'/'+file_
+            source_path = PDF_DIR+file_
+            docMan.sort(source_path, dist_path)
+            validated_docs.append(file_,)
+            # DEBUG OPERATION! #
+            # Move files back to PDF folder to aviod reverting manually.
+            docMan.un_sort(dist_path, source_path)
+            # ---------------- #
         else:
             failed_docs.append(file_)
 
