@@ -8,10 +8,12 @@
 
 # Document Managment module.
 import tempfile
-from os import listdir, remove,makedirs
-from os.path import isfile, join, splitext, basename, exists
+import datetime
+from os import listdir, remove
+from os.path import isfile, join, splitext, basename
 from shutil import rmtree
 from pdf2image import convert_from_path
+
 
 # INPUT: Path to files
 # OUTPUT: List of files in path
@@ -57,3 +59,17 @@ def pdf2jpg(pdf_path, jpg_path):
     print('pdf2jpg debug - base_filename: ',base_filename)
 
     return base_filename
+
+# INPUT file_name: name of file
+#       sort_path: path file was sorted to
+# DESCRIPTION: Log the location a file was sorted to.
+# log file is placed in top dir of program execution
+def log(file_name, sort_path):
+    log_file = 'Verification_log.txt'
+    file = open(log_file, 'w')
+    file.write(file_name + ' sorted to: '+ sort_path+' on '+datetime.now().date())
+
+# INPUT file_name: file to be sorted
+#       Sort Path: path to sort to
+def sort(file_name, sort_path):
+    print('mmm')
