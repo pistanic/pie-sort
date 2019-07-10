@@ -58,6 +58,7 @@ def main():
         printf('txt_path',txt_path)
         ocr.extract_text(img_path, txt_path)
         ocr_df = ocr.text_to_dataframe(txt_path)
+        printf('ocr_df:', ocr_df)
         ocr_str = ocr.extract_string(img_path)
 
         # AOI Masking Demo
@@ -79,19 +80,18 @@ def main():
         printf('List of possible DOBs from document', DOBs)
 
         # Strip master dataframe of all commas after most processing has been done.
-        formatted_df = ocr.format_df(ocr_df)
         #printf('Formatted data frame', formatted_df)
 
         #Access confedence for the first instance of 'Contrast'
         #name_cand_dict[<Key>][<First/Last>][instance][data]
         #name_cand_dict = ocr.create_name_candidates(hack_names, comma_free_df)
-
         # Validate debug
+        df_list = [ocr_df, ocr_str, patient_database]
         printf('PHN LIST: ',PHNs)
         validated = False;
         valid_phn = 0;
         for phn in PHNs:
-            if validate.phn_primary(formatted_df, ocr_str, patient_database, phn):
+            if validate.phn_primary(df_list, phn):
                 num_val_docs += 1
                 validated = True
                 valid_phn = phn
