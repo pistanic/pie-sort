@@ -102,13 +102,13 @@ def main():
             source_path = PDF_DIR+file_
             docMan.sort(source_path, dist_path)
             validated_docs.append(file_,)
+            # DEBUG OPERATION! #
+            # Move files back to PDF folder to aviod reverting manually.
+            docMan.un_sort(dist_path, source_path)
+            # ---------------- #
         else:
             failed_docs.append(file_)
 
-        # DEBUG OPERATION! #
-        # Move files back to PDF folder to aviod reverting manually.
-        docMan.un_sort(dist_path, source_path)
-        # ---------------- #
     printf('Number of Validated Documents out of '+str(len(file_list)),num_val_docs)
     printf('Accuracy', (num_val_docs/len(file_list)))
     printf('Validated Documents',validated_docs)

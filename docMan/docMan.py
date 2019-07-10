@@ -8,7 +8,6 @@
 
 # Document Managment module.
 import tempfile
-import re
 from datetime import datetime
 from os import listdir, remove, rename, makedirs
 from os.path import isfile, join, splitext, basename
@@ -47,7 +46,6 @@ def pdf2jpg(pdf_path, jpg_path):
     base_filename = splitext(basename(pdf_path))[0]
 
     try:
-        print('docman')
         makedirs(join(jpg_path, base_filename))
     except:
         print('file directory already exists')
@@ -64,13 +62,13 @@ def pdf2jpg(pdf_path, jpg_path):
 # DESCRIPTION: Log the location a file was sorted to.
 # log file is placed in top dir of program execution
 def log(file_name, sort_path):
-    log_path = 'log/'
+    log_path = 'log/'+str(datetime.now().date())+'/'
     try:
         makedirs(log_path)
     except:
         print('log dir already exists')
 
-    log_file = log_path+'Verification-log-'+str(datetime.now().date())+'.txt'
+    log_file = log_path+'Verification-log.txt'
     file = open(log_file, 'w')
     file.write(file_name + ' sorted to: '+ sort_path+'\n')
     file.close
