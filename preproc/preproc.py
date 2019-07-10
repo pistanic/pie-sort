@@ -11,10 +11,14 @@
 import cv2
 #import pytesseract
 from PIL import Image
+import docMan
+import numpy as np
 
-# INPUT: Path of Image
+# INPUT: Path of Image Folder
+
 # OUTPUT: Overwrite original image
 # DESCRIPTION: Filter image.
+
 def pre_process(ImagePath):
     file_list = docMan.get_file_list(ImagePath)
     try:

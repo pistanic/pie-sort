@@ -22,13 +22,21 @@ from dateutil.parser import parse
 # OUTPUT: possible_names - list of possible names
 # DESCRIPTION: Searches OCR dataframe and returns list of PHNs for patient.
 def extract_PHN(ocr_df):
+    extraction_df = ocr_df.copy(deep=True)
+
+
     possible_PHNs = []
 
+    #Strip everything except digits
+    extraction_df['text'] = extraction_df['text'].str.replace("-","")
+    extraction_df['text'] = extraction_df['text'].str.findall('(\d{7,11})')
+    extraction_df['text'] = extraction_df['text'].apply(', '.join)
+
     # create boolean mask for numeric text in ocr_df
-    df_digits_boo = ocr_df['text'].str.isdigit()
+    df_digits_boo = extraction_df['text'].str.isdigit()
     df_mask = df_digits_boo == True
 
-    df_digits = ocr_df['text'].loc[df_mask] # create new dataframe of only digits from OCR
+    df_digits = extraction_df['text'].loc[df_mask] # create new dataframe of only digits from OCR
     df_PHN = df_digits.loc[df_digits.str.len() >= 8]  # create dataframe of possible PHN (numbers with greater than or equal to 8 digits)
     possible_PHNs = list(df_digits.loc[(df_digits.str.len() > 4) & (df_digits.str.len() < 12)]) # create list of digits that are 5 to 12 characters in length
 
@@ -46,13 +54,23 @@ def extract_DOB(ocr_str): #TODO differentiate if 2019/01/05 is found from Januar
 
     # use nlp to find dates in document
     for ent in doc.ents:
-        if ent.label_ == 'DATE':
+        if (ent.label_ == 'DATE'):
             unformatted_dates.append(ent)
 
+    print('extract_DOB debug - DOB List:')
+    print(unformatted_dates)
+
     # convert unformatted dates to ISO 8601 format (YYYY-MM-DD) using EAFP practice (easier to ask forgiveness than permission)
+
     for date in unformatted_dates:
         try:
-            obj = parse(date.__str__())
+            try:
+                obj = parse(date.__str__())
+            except OverflowError:
+                print("extract_dob: overflow error converting: ")
+                print(date)
+                print()
+                continue
             formatted_date = obj.strftime("%Y-%m-%d")
             possible_DOBs.append(formatted_date)
         except ValueError:
