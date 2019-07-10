@@ -30,7 +30,7 @@ def main():
     # Validation Stats
     num_val_docs = 0
     failed_docs = []
-
+    validated_docs = []
     # Main processing loop
     for file_ in file_list:
         # Print processing file
@@ -87,15 +87,21 @@ def main():
 
         # Validate debug
         printf('PHN LIST: ',PHNs)
+        validated = False;
         for phn in PHNs:
             if validate.phn_primary(formatted_df, ocr_str, patient_database, phn):
                 num_val_docs += 1
-            else:
-                if(failed_docs.count(file_) == 0):
-                    failed_docs.append(file_)
+                validated = True
+                break
+
+        if (validated):
+            validated_docs.append(file_)
+        else:
+            failed_docs.append(file_)
 
     printf('Number of Validated Documents out of '+str(len(file_list)),num_val_docs)
     printf('Accuracy', (num_val_docs/len(file_list)))
+    printf('Validated Documents',validated_docs)
     printf('Failing Documents',failed_docs)
 
 
