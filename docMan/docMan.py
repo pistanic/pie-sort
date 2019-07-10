@@ -54,6 +54,6 @@ def pdf2jpg(pdf_path, jpg_path):
         page.save(join(jpg_path,base_filename,base_filename +'_page'+str(i)+'.jpg'), 'JPEG')
         i = i + 1
 
-    print('xxxxxxxxxxxxxxxxxxxxx-----',base_filename)
+    print('pdf2jpg debug - base_filename: ',base_filename)
 
     return base_filename
