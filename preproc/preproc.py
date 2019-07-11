@@ -25,10 +25,9 @@ def pre_process(ImagePath):
         file_list.remove('Image.jpg')
     except:
         print('Stack does not exist')
-    i = 0
 
-    for file_ in file_list:
-        if i == 10:
+    for i, file_ in enumerate(file_list):
+        if i+1 == 10:
             break
         image_path_in_folder = ImagePath +'/'+file_
 
@@ -43,7 +42,6 @@ def pre_process(ImagePath):
         dst = cv2.medianBlur(dst, 3) #removes salt and pepper by replacing pixles with median value
         dst = cv2.bilateralFilter(dst, 9, 75, 75) #removes noise while keeping sharp edges
         cv2.imwrite(image_path_in_folder, dst)
-        i = i+1
 
    # list_im = ['Test1.jpg', 'Test2.jpg', 'Test3.jpg']
   #  imgs = [Image.open(ImagePath +'/'+file_) for file_ in file_list]
