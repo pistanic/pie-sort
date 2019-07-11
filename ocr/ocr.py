@@ -16,8 +16,6 @@ import docMan
 
 from PIL import Image, ImageEnhance, ImageFilter
 
-
-
 # INPUT: img_path - path to image that tesseract will process
 #        txt_path - path to text file that tesseract will write data to.
 # OUTPUT: None
@@ -32,7 +30,6 @@ def extract_text(img_path, txt_path):
         file = open(txt_path+'/'+file_.replace('.jpg','.txt'), 'w')
         file.write(text)
         file.close
-
 
 # INPUT: text_path - path to csv data
 # OUTPUT: pandas dataframe created from csv file
@@ -59,23 +56,6 @@ def extract_string(img_path):
     for file_ in file_list:
         text = text + pytesseract.image_to_string(Image.open(img_path+'/'+file_)) + ' '      # Tesseract OCR)
     return text
-
-# INPUT: dataframe
-# OUTPUT: dataframe with all commas removed from the end of text.
-# DESCRIPTION: format a dataframe to meet processing needs.
-#              - Format the case of each text value (ROB, -> Rob,)
-#              - Remove commas from the end (Rob, -> Rob)
-def format_df(df):
-    for index, row in df.iterrows():
-        txt = row['text']
-        stxt = str(txt)
-        ftxt = stxt.title()
-        df.at[index, 'text'] = ftxt
-        if(ftxt.endswith(',')):
-            ftxt = ftxt[:-1]
-            df.at[index, 'text'] = ftxt
-    print (df)
-    return df
 
 # INPUT: names - list of name strings
 #        df - master ocr dataframe
@@ -130,48 +110,4 @@ def create_phn_candidates(phns, formatted_df):
         phn_candidate_dict[phn] = row_data.values
 
     return phn_candidate_dict
-
-# INPUT: formatted_df - dataframe of ocr output with comma striped.
-#        name string - (first last)
-# OUTPUT: Boolean success flag if name is found in ocr data
-# DESCRIPTION: Look for name in formatted dataframe
-def look_for_name(formatted_df, name):
-    print ('look_for_name debug - validating '+name)
-    first_last = name.split(' ', 1)
-
-    # Create a copy of the dataframe with rows shifted up one
-    formatted_df["next_name"] = formatted_df["text"].shift(1)
-
-    # Create a copy of the dataframe with rows shifted down one
-    formatted_df["previous_name"] = formatted_df["text"].shift(-1)
-
-    # find index of first name. if not found, return false
-    first_idx_df = formatted_df.loc[formatted_df['text'] == first_last[0]]
-    if(first_idx_df.empty):
-        return False
-    first_idx = first_idx_df.index[0]
-
-    # find index of last name. if not found, return false
-    last_idx_df = formatted_df.loc[formatted_df['text'] == first_last[1]]
-    if (last_idx_df.empty):
-        return False
-    last_idx = last_idx_df.index[0]
-
-    # index of first and last name
-    idx = [first_idx, last_idx]
-    names_df = formatted_df.loc[idx,['text','next_name','previous_name']]
-
-    for i in range(len(idx)):
-        text = names_df.loc[idx[i],'text']
-        next_name = names_df.loc[idx[i],'next_name']
-        lookup_name = text + ' ' + next_name
-        if (lookup_name == name):
-            print ('look_for_name debug - ' +name + " has been validated with: "+lookup_name)
-            return True
-
-        previous_name = names_df.loc[idx[i], 'previous_name']
-        lookup_name = text + ' ' + previous_name
-        if (lookup_name == name):
-            print ('look_for_name debug - ' +name + " has been validated with: "+lookup_name)
-            return True
 
