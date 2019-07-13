@@ -34,6 +34,7 @@ def main():
     validated_docs = []
     # Main processing loop
     for file_ in file_list:
+        print('****************************************************************************************************************************************************')
         # Print processing file
         printf('file_ in file_list', file_)
         image_name = docMan.pdf2jpg((PDF_DIR+file_), IMG_DIR) # store image in IMG_DIR
@@ -42,7 +43,7 @@ def main():
         img_path = IMG_DIR+image_name
 
         # Preprocessing Stage
-        img_path = preproc.pre_process(img_path)
+        #img_path = preproc.pre_process(img_path)
 
         # OCR Stage
         printf('txt_dir + img_name',TXT_DIR+image_name)
@@ -62,9 +63,9 @@ def main():
         ocr_str = ocr.extract_string(img_path)
 
         # AOI Masking Demo
-        PHN_AOI_demo = 'Sidney'
-        aoi_df = searchHelp.PHN_Document_Box_Search(PHN_AOI_demo,ocr_df,500,500)
-        printf('Area of Interest Dataframe', aoi_df)
+        #PHN_AOI_demo = 'Sidney'
+        #aoi_df = searchHelp.PHN_Document_Box_Search(PHN_AOI_demo,ocr_df,500,500)
+        #printf('Area of Interest Dataframe', aoi_df)
 
         # NLP Stage
         # Create list of possible PHNs for patient
@@ -85,29 +86,42 @@ def main():
         #Access confedence for the first instance of 'Contrast'
         #name_cand_dict[<Key>][<First/Last>][instance][data]
         #name_cand_dict = ocr.create_name_candidates(hack_names, comma_free_df)
-        # Validate debug
-        df_list = [ocr_df, ocr_str, patient_database]
+
+        # FIXME Valdiation should be moved to a control loop inside validation
+        # module.
+
+        #Validate debug
+        df_list = [ocr_df, ocr_str, patient_database, hack_names]
         printf('PHN LIST: ',PHNs)
         validated = False;
         valid_phn = 0;
-        for phn in PHNs:
-            if validate.phn_primary(df_list, phn):
-                num_val_docs += 1
-                validated = True
-                valid_phn = phn
-                break
+        #for phn in PHNs:
+        #    if validate.phn_primary(df_list, phn):
+        #        num_val_docs += 1
+        #        validated = True
+        #        valid_phn = phn
+        #        break
 
-        if (validated):
-            dist_path = SORT_DIR+phn+'/'+file_
-            source_path = PDF_DIR+file_
-            docMan.sort(source_path, dist_path)
-            validated_docs.append(file_,)
+        if validate.name_primary(df_list, PHNs):
+            num_val_docs += 1
+            validated = True
+
+        if validated:
+            printf('Successful name primary validation of',file_)
+        else:
+            printf('Failed name primary validation',file_)
+
+        #if (validated):
+        #    dist_path = SORT_DIR+valid_phn+'/'+file_
+        #    source_path = PDF_DIR+file_
+        #    docMan.sort(source_path, dist_path)
+        #    validated_docs.append(file_,)
             # DEBUG OPERATION! #
             # Move files back to PDF folder to aviod reverting manually.
-            docMan.un_sort(dist_path, source_path)
+        #    docMan.un_sort(dist_path, source_path)
             # ---------------- #
-        else:
-            failed_docs.append(file_)
+        #else:
+        #    failed_docs.append(file_)
 
     printf('Number of Validated Documents out of '+str(len(file_list)),num_val_docs)
     printf('Accuracy', (num_val_docs/len(file_list)))
