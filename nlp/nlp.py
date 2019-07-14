@@ -78,28 +78,50 @@ def extract_DOB(ocr_str): #TODO differentiate if 2019/01/05 is found from Januar
 
     return possible_DOBs
 
+# INPUT: document - string of document text
+# OUTPUT: names - list of names identified from document text with NLTK NER function
+# DESCRIPTION: output array of possible  names using NLTK Named Entity Recognition
+def extract_names(ocr_df):
+    possible_names = []
+    capitalized_words = hack_extract_names(ocr_df)
+
+    for possible_name in capitalized_words:
+        word_tag = pos_tagging(possible_name)
+        named_ent = nltk.ne_chunk(word_tag[0])
+
+        i = 0
+        while i < len(named_ent):
+            if type(named_ent[i]) == nltk.tree.Tree:
+                if named_ent[i]._label == 'PERSON':
+                    possible_names.append(possible_name) # add possible names to array
+            i = i + 1
+
+    print("length of capitalized words: " + str(len(capitalized_words)))
+    print("length of possible names: " + str(len(possible_names)))
+    return possible_names
+
 # INPUT: ocr_df - pandas dataframe of document OCR
 # OUTPUT: possible_names - list of possible names
 # DESCRIPTION: searches OCR dataframe and returns list of names for patient (HACK METHOD BECAUSE FUNCTION WILL FAIL IF ALL TEXT ARE UPPERCASE)
 def hack_extract_names(ocr_df):
-    possible_names = []
+    capitalized_words = []
 
     for i in range(0, ocr_df.shape[0] - 1):
         if ocr_df['text'].iloc[i][0].isupper() and ocr_df['text'].iloc[i + 1][0].isupper():
             if ocr_df['text'].iloc[i][-1] == ",":
                 # if format of name is 'Trudeau, Justin'
                 if ocr_df['text'].iloc[i + 1][-1] == ",":
-                    possible_names.append(ocr_df['text'].iloc[i + 1][:-1] + " " + ocr_df['text'].iloc[i])
+                    capitalized_words.append(ocr_df['text'].iloc[i + 1][:-1] + " " + ocr_df['text'].iloc[i])
                 else:
-                    possible_names.append(ocr_df['text'].iloc[i + 1][:-1] + " " + ocr_df['text'].iloc[i])
+                    capitalized_words.append(ocr_df['text'].iloc[i + 1][:-1] + " " + ocr_df['text'].iloc[i])
             else:
                 # if format of name is 'Justin Trudeau'
                 if ocr_df['text'].iloc[i + 1][-1] == ",":
-                    possible_names.append(ocr_df['text'].iloc[i + 1][:-1] + " " + ocr_df['text'].iloc[i])
+                    capitalized_words.append(ocr_df['text'].iloc[i + 1][:-1] + " " + ocr_df['text'].iloc[i])
                 else:
-                    possible_names.append(ocr_df['text'].iloc[i] + " " + ocr_df['text'].iloc[i + 1])
-    return possible_names
+                    capitalized_words.append(ocr_df['text'].iloc[i] + " " + ocr_df['text'].iloc[i + 1])
 
+    return capitalized_words
 
 # INPUT: document - string of document text
 # OUTPUT: tagged_words - array of text with parts of speech tagging
@@ -109,17 +131,3 @@ def pos_tagging(document):
     words = [nltk.word_tokenize(sent) for sent in sentences]
     tagged_words = [nltk.pos_tag(word) for word in words]
     return tagged_words
-
-# INPUT: document - string of document text
-# OUTPUT: names - list of names identified from document text with NLTK NER function
-# DESCRIPTION: output array of possible  names using NLTK Named Entity Recognition
-def extract_names(document):
-    names = []
-    tagged = pos_tagging(document)
-    named_ent = nltk.ne_chunk(tagged[0])
-    for chunk in named_ent:
-        if type(chunk) == nltk.tree.Tree:
-            if chunk.label() == 'PERSON':
-                names.append(' '.join([c[0] for c in chunk])) # add possible names to array
-    return names
-

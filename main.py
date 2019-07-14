@@ -42,7 +42,7 @@ def main():
         img_path = IMG_DIR+image_name
 
         # Preprocessing Stage
-        img_path = preproc.pre_process(img_path)
+        #img_path = preproc.pre_process(img_path)
 
         # OCR Stage
         printf('txt_dir + img_name',TXT_DIR+image_name)
@@ -72,8 +72,8 @@ def main():
         printf('List of possible PHNs from document', PHNs)
 
         # Create list of possible names for patient
-        hack_names = nlp.hack_extract_names(ocr_df)
-        printf('List of possible names from document', hack_names)
+        names = nlp.extract_names(ocr_df)
+        printf('List of possible names from document', names)
 
         # Create list of possible date of births for patient
         DOBs = nlp.extract_DOB(ocr_str)
