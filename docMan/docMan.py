@@ -14,6 +14,13 @@ from os.path import isfile, join, splitext, basename
 from shutil import rmtree
 from pdf2image import convert_from_path
 
+# INPUT: List of dirs to create
+def init_folders(dir_list):
+    for dir_ in dir_list:
+        try:
+            makedirs(dir_)
+        except:
+            print('file directory already exists')
 
 # INPUT: Path to files
 # OUTPUT: List of files in path
@@ -76,7 +83,7 @@ def log(file_name, sort_path):
 # INPUT source_path: path to file
 #       dist_path: destination path for file
 def sort(source_path, dist_path):
-    base_filename = splitext(basename(source_path))[0]+'.pdf'
+    base_filename = basename(source_path)
     dist_dir = dist_path.replace(base_filename,'') #strip filename
     try:
         makedirs(dist_dir)
