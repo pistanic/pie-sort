@@ -104,11 +104,12 @@ def phn_primary(df_list, phn):
 #        name - name to validate
 # OUTPUT:
 # DESCRIPTION:
-def name_primary(df_list, PHNs):
+def name_primary(df_list, personal_id):
     # These can be moved to a larger validation control loop
     # One call from main to validate.
     database = df_list[2]
-    name_list = df_list[3]
+    name_list = personal_id[0]
+    PHNs = personal_id[1]
 
     # Create empty df to be filled with all hits.
     first_hits = pd.DataFrame(columns=database.columns.values)
@@ -155,11 +156,13 @@ def name_primary(df_list, PHNs):
     else:
         if first_hits.empty:
             hits_df = last_hits
-        else:
+        elif last_hits.empty:
             hits_df = first_hits
+        else:
+            print("validation debug - NO HITS! ALL DF EMPTY")
 
-    #print('validation debug- Hits_df:')
-    #print(hits_df)
+    print('validation debug- Hits_df:')
+    print(hits_df)
     # if this df is empty all hits in first, mid, last were unique.
     if hits_df.empty:
         return False
@@ -179,3 +182,25 @@ def name_primary(df_list, PHNs):
         print('Validation debug name_primary - FAILED - PHN not found in hits df')
         return False
 
+def validate(df_list, personal_id):
+    validated = False
+    # TODO return validated name and phn.
+    valid_phn = None
+    print("***** ATTEMPTING PHN_PRIMARY VALIDATION *****")
+    for phn in personal_id[1]:
+        if phn_primary(df_list, phn):
+            validated = True
+            valid_phn = phn
+            break
+    if(not validated):
+        print("***** PHN_PRIMARY VALIDATION FAILED *****")
+        print()
+        print("***** ATTEMPTING NAME_PRIMARY VALIDATION *****")
+        if name_primary(df_list, personal_id):
+            validated = True
+        else:
+            print("***** NAME_PRIMARY VALIDATION FAILED *****")
+            # Third stage validation
+            pass
+
+    return validated

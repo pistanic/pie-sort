@@ -21,6 +21,7 @@ def main():
     SORT_DIR = LOCAL_DIR+'pd/'
     IMG_DIR = TMP_DIR+'img/'
     TXT_DIR = TMP_DIR+'txt/'
+
     patient_database = searchHelp.init_test_db()
 
     # Print Verification database
@@ -68,7 +69,7 @@ def main():
 
         # NLP Stage
         # Create list of possible PHNs for patient
-        PHNs = nlp.extract_PHN(ocr_df)
+        PHNs = nlp.extract_PHN(ocr_df, ocr_str)
         printf('List of possible PHNs from document', PHNs)
 
         # Create list of possible names for patient
@@ -86,36 +87,20 @@ def main():
         #name_cand_dict[<Key>][<First/Last>][instance][data]
         #name_cand_dict = ocr.create_name_candidates(hack_names, comma_free_df)
 
-        # FIXME Valdiation should be moved to a control loop inside validation
-        # module.
-
         #Validate debug
-        df_list = [ocr_df, ocr_str, patient_database, hack_names]
+        df_list = [ocr_df, ocr_str, patient_database]
+        personal_id = [names, PHNs]
         printf('PHN LIST: ',PHNs)
-        validated = False;
-        valid_phn = 0;
-        for phn in PHNs:
-            if validate.phn_primary(df_list, phn):
-                num_val_docs += 1
-                validated = True
-                valid_phn = phn
-                break
 
-        # Name Primary validation is working.
-        # TODO move validation to its own control loop.
-        #if validate.name_primary(df_list, PHNs):
-        #    num_val_docs += 1
-        #    validated = True
-
-
-        if (validated):
-            dist_path = SORT_DIR+valid_phn+'/'+file_
-            source_path = PDF_DIR+file_
-            docMan.sort(source_path, dist_path)
+        if (validate.validate(df_list, personal_id)):
             validated_docs.append(file_,)
-            # DEBUG OPERATION! #
-            # Move files back to PDF folder to aviod reverting manually.
-            docMan.un_sort(dist_path, source_path)
+            num_val_docs = 1 + num_val_docs
+            #dist_path = SORT_DIR+valid_phn+'/'+file_
+            #source_path = PDF_DIR+file_
+            #docMan.sort(source_path, dist_path)
+            ## DEBUG OPERATION! #
+            ## Move files back to PDF folder to aviod reverting manually.
+            #docMan.un_sort(dist_path, source_path)
             # ---------------- #
         else:
             failed_docs.append(file_)
