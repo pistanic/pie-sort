@@ -68,7 +68,7 @@ def main():
 
         # NLP Stage
         # Create list of possible PHNs for patient
-        PHNs = nlp.extract_PHN(ocr_df)
+        PHNs = nlp.extract_PHN(ocr_df, ocr_str)
         printf('List of possible PHNs from document', PHNs)
 
         # Create list of possible names for patient
