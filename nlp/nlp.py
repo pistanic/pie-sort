@@ -108,9 +108,9 @@ def rule_based_names(ocr_df):
             if ocr_df['text'].iloc[i][-1] == ",":
                 # if format of name is 'Trudeau, Justin'
                 if ocr_df['text'].iloc[i + 1][-1] == ",":
-                    capitalized_words.append(ocr_df['text'].iloc[i + 1][:-1] + " " + ocr_df['text'].iloc[i])
+                    capitalized_words.append(ocr_df['text'].iloc[i + 1][:-1] + " " + ocr_df['text'].iloc[i][:-1])
                 else:
-                    capitalized_words.append(ocr_df['text'].iloc[i + 1][:-1] + " " + ocr_df['text'].iloc[i])
+                    capitalized_words.append(ocr_df['text'].iloc[i + 1] + " " + ocr_df['text'].iloc[i][:-1])
             else:
                 # if format of name is 'Justin Trudeau'
                 if ocr_df['text'].iloc[i + 1][-1] == ",":
