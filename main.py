@@ -85,8 +85,12 @@ def main():
         #Access confedence for the first instance of 'Contrast'
         #name_cand_dict[<Key>][<First/Last>][instance][data]
         #name_cand_dict = ocr.create_name_candidates(hack_names, comma_free_df)
-        # Validate debug
-        df_list = [ocr_df, ocr_str, patient_database]
+
+        # FIXME Valdiation should be moved to a control loop inside validation
+        # module.
+
+        #Validate debug
+        df_list = [ocr_df, ocr_str, patient_database, hack_names]
         printf('PHN LIST: ',PHNs)
         validated = False;
         valid_phn = 0;
@@ -97,8 +101,15 @@ def main():
                 valid_phn = phn
                 break
 
+        # Name Primary validation is working.
+        # TODO move validation to its own control loop.
+        #if validate.name_primary(df_list, PHNs):
+        #    num_val_docs += 1
+        #    validated = True
+
+
         if (validated):
-            dist_path = SORT_DIR+phn+'/'+file_
+            dist_path = SORT_DIR+valid_phn+'/'+file_
             source_path = PDF_DIR+file_
             docMan.sort(source_path, dist_path)
             validated_docs.append(file_,)

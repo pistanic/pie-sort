@@ -26,6 +26,9 @@ def pre_process(ImagePath):
     except:
         print('Stack does not exist')
 
+    file_list.sort()
+    file_list.sort(key=len)
+
     for i, file_ in enumerate(file_list):
         if i+1 == 10:
             break
@@ -33,14 +36,14 @@ def pre_process(ImagePath):
 
         print(image_path_in_folder)
         print('Pre_processing ',file_,'....')
-        Image.MAX_IMAGE_PIXELS = None #remove pixel limit for the Image library
+        #Image.MAX_IMAGE_PIXELS = None #remove pixel limit for the Image library
         dst = cv2.imread(image_path_in_folder)
-        dst = cv2.fastNlMeansDenoisingColored(dst, None, 10, 10, 7, 21)
-        dst = cv2.resize(dst, (9900, 7500), interpolation=cv2.INTER_AREA) #resizes standard letter sized images to 9900x7500
+        #dst = cv2.fastNlMeansDenoisingColored(dst, None, 10, 10, 7, 21)
+        dst = cv2.resize(dst, (5100, 6600), interpolation=cv2.INTER_AREA) #resizes standard letter sized images to 9900x7500
         dst = cv2.blur(dst, (5, 5)) # averages pixel values to remove disrencrepancy
-        dst = cv2.GaussianBlur(dst, (5, 5), 0)
-        dst = cv2.medianBlur(dst, 3) #removes salt and pepper by replacing pixles with median value
-        dst = cv2.bilateralFilter(dst, 9, 75, 75) #removes noise while keeping sharp edges
+        #dst = cv2.GaussianBlur(dst, (5, 5), 0)
+        #dst = cv2.medianBlur(dst, 3) #removes salt and pepper by replacing pixles with median value
+        #dst = cv2.bilateralFilter(dst, 9, 75, 75) #removes noise while keeping sharp edges
         cv2.imwrite(image_path_in_folder, dst)
 
    # list_im = ['Test1.jpg', 'Test2.jpg', 'Test3.jpg']
