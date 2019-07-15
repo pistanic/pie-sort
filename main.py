@@ -21,6 +21,7 @@ def main():
     SORT_DIR = LOCAL_DIR+'pd/'
     IMG_DIR = TMP_DIR+'img/'
     TXT_DIR = TMP_DIR+'txt/'
+
     patient_database = searchHelp.init_test_db()
 
     # Print Verification database
@@ -42,7 +43,7 @@ def main():
         img_path = IMG_DIR+image_name
 
         # Preprocessing Stage
-        img_path = preproc.pre_process(img_path)
+        #img_path = preproc.pre_process(img_path)
 
         # OCR Stage
         printf('txt_dir + img_name',TXT_DIR+image_name)
@@ -58,6 +59,7 @@ def main():
         printf('txt_path',txt_path)
         ocr.extract_text(img_path, txt_path)
         ocr_df = ocr.text_to_dataframe(txt_path)
+        printf('ocr_df:', ocr_df)
         ocr_str = ocr.extract_string(img_path)
 
         # AOI Masking Demo
@@ -67,44 +69,38 @@ def main():
 
         # NLP Stage
         # Create list of possible PHNs for patient
-        PHNs = nlp.extract_PHN(ocr_df)
+        PHNs = nlp.extract_PHN(ocr_df, ocr_str)
         printf('List of possible PHNs from document', PHNs)
 
         # Create list of possible names for patient
-        hack_names = nlp.hack_extract_names(ocr_df)
-        printf('List of possible names from document', hack_names)
+        names = nlp.extract_names(ocr_df)
+        printf('List of possible names from document', names)
 
         # Create list of possible date of births for patient
         DOBs = nlp.extract_DOB(ocr_str)
         printf('List of possible DOBs from document', DOBs)
 
         # Strip master dataframe of all commas after most processing has been done.
-        formatted_df = ocr.format_df(ocr_df)
         #printf('Formatted data frame', formatted_df)
 
         #Access confedence for the first instance of 'Contrast'
         #name_cand_dict[<Key>][<First/Last>][instance][data]
         #name_cand_dict = ocr.create_name_candidates(hack_names, comma_free_df)
 
-        # Validate debug
+        #Validate debug
+        df_list = [ocr_df, ocr_str, patient_database]
+        personal_id = [names, PHNs]
         printf('PHN LIST: ',PHNs)
-        validated = False;
-        valid_phn = 0;
-        for phn in PHNs:
-            if validate.phn_primary(formatted_df, ocr_str, patient_database, phn):
-                num_val_docs += 1
-                validated = True
-                valid_phn = phn
-                break
 
-        if (validated):
-            dist_path = SORT_DIR+phn+'/'+file_
-            source_path = PDF_DIR+file_
-            docMan.sort(source_path, dist_path)
+        if (validate.validate(df_list, personal_id)):
             validated_docs.append(file_,)
-            # DEBUG OPERATION! #
-            # Move files back to PDF folder to aviod reverting manually.
-            docMan.un_sort(dist_path, source_path)
+            num_val_docs = 1 + num_val_docs
+            #dist_path = SORT_DIR+valid_phn+'/'+file_
+            #source_path = PDF_DIR+file_
+            #docMan.sort(source_path, dist_path)
+            ## DEBUG OPERATION! #
+            ## Move files back to PDF folder to aviod reverting manually.
+            #docMan.un_sort(dist_path, source_path)
             # ---------------- #
         else:
             failed_docs.append(file_)
