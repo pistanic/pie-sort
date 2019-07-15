@@ -5,6 +5,7 @@
 # Co-Authors:                                                   #
 #                                                               #
 #################################################################
+import pandas as pd
 
 import searchHelp
 import nlp
@@ -70,6 +71,8 @@ def look_for_name(formatted_df, name):
 # OUTPUT: true if the name or dob have been verified against the phn.
 # DESCRIPTION: This function searchs for the name and DOB in the database given a phn.
 def phn_primary(df_list, phn):
+    # These can be moved to a larger validation control loop
+    # One call from main to validate.
     ocr_df = format_df(df_list[0])
     ocr_str = df_list[1]
     database = df_list[2]
@@ -96,3 +99,83 @@ def phn_primary(df_list, phn):
             print('phn_primary debug - DOB validated')
 
     return success_flag
+
+# INPUT: df_list - List of data frames passed from main
+#        name - name to validate
+# OUTPUT:
+# DESCRIPTION:
+def name_primary(df_list, PHNs):
+    # These can be moved to a larger validation control loop
+    # One call from main to validate.
+    database = df_list[2]
+    name_list = df_list[3]
+
+    # Create empty df to be filled with all hits.
+    first_hits = pd.DataFrame(columns=database.columns.values)
+    mid_hits = pd.DataFrame(columns=database.columns.values)
+    last_hits = pd.DataFrame(columns=database.columns.values)
+    for name in name_list:
+        # Split names to first, middle (optional), last names.
+        name = name.split()
+        # Check assumption
+        if len(name) > 3:
+            print('Validation Error in Name-Primary: More than 3 sub names within name.')
+            continue
+        for sub_name in name:
+            # Format subnames
+            sub_name = sub_name.title()
+            if(sub_name.endswith(',') or sub_name.endswith('.')):
+                sub_name = sub_name[:-1]
+            try:
+                hit_idx = database.loc[database['First_Name'] == sub_name].index[0]
+                first_hits.loc[database.index[hit_idx]] = database.iloc[hit_idx]
+            except IndexError:
+                pass
+                #print(sub_name+' is not a first name in the database.')
+            try:
+                hit_idx = database.loc[database['Middle_Name'] == sub_name].index[0]
+                mid_hits.loc[database.index[hit_idx]] = database.iloc[hit_idx]
+            except IndexError:
+                pass
+                #print(sub_name+' is not a middle name in the database.')
+            try:
+                hit_idx = database.loc[database['Last_Name'] == sub_name].index[0]
+                last_hits.loc[database.index[hit_idx]] = database.iloc[hit_idx]
+            except IndexError:
+                pass
+                #print(sub_name+' is not a last name in the database.')
+
+    # Merge all hits df as long as they are not empty.
+    # If first or last is empty, set the hits_df to first OR last. Middle will be neglected.
+    if not (first_hits.empty or last_hits.empty):
+        merge_col = ['First_Name', 'Middle_Name', 'Last_Name', 'PHN']
+        hits_df = pd.merge(first_hits, last_hits, on=merge_col, how='outer')
+        if not mid_hits.empty:
+            hits_df = pd.merge(hits_df, mid_hits, on=merge_col, how='outer')
+    else:
+        if first_hits.empty:
+            hits_df = last_hits
+        else:
+            hits_df = first_hits
+
+    #print('validation debug- Hits_df:')
+    #print(hits_df)
+    # if this df is empty all hits in first, mid, last were unique.
+    if hits_df.empty:
+        return False
+
+     # check hits df for phn to confirm
+    validated = False
+    for phn in PHNs:
+        tmp = hits_df.loc[hits_df['PHN'] == phn]
+        if not tmp.empty:
+            validated = True
+            break
+
+    if validated:
+        print('Validation debug name_primary - SUCCESS')
+        return True
+    else:
+        print('Validation debug name_primary - FAILED - PHN not found in hits df')
+        return False
+
