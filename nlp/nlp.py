@@ -9,18 +9,34 @@
 # NLP module to find patient identifiers from OCR
 import nltk
 import spacy
+import re
 from collections import Counter
 from dateutil.parser import parse
 
 # INPUT: ocr_df - pandas dataframe of document OCR
+#        ocr_str - string of document text
 # OUTPUT: possible_names - list of possible names
 # DESCRIPTION: Searches OCR dataframe and returns list of PHNs for patient.
-def extract_PHN(ocr_df):
+def extract_PHN(ocr_df, ocr_str):
     extraction_df = ocr_df.copy(deep=True)
-
 
     possible_PHNs = []
 
+    # METHOD 1: Find PHN through regular expressions to find "PHN" in ocr_string and return next word
+    string_list = ocr_str.split()
+    pattern_PHN = r'\bphn\b|\bid\b'
+    p = re.compile(pattern_PHN, re.I)
+    idx = [i for i, item in enumerate(string_list) if re.search(p, item)] # return index of "PHN" in string list
+
+    for i in idx:
+        if len(string_list[i]) < 5:
+        # eg. if string_list[i] is "PHN:" or "PHN" then the PHN number is in the next index
+            possible_PHNs.append(re.sub("\D", "", string_list[i+1])) # appends only numeric characters of word after "PHN" in list
+        if len(string_list[i]) >= 5:
+        # eg. if string_list[i] is "PHN:12345678" or "PHN1234578" then the PHN number is in the same index
+            possible_PHNs.append(re.sub("\D", "", string_list[i])) # appends only numeric characters of word
+
+    # METHOD 2: Find PHN through similar length digits
     #Strip everything except digits
     extraction_df['text'] = extraction_df['text'].str.replace("-","")
     extraction_df['text'] = extraction_df['text'].str.findall('(\d{7,11})')
@@ -32,11 +48,14 @@ def extract_PHN(ocr_df):
 
     df_digits = extraction_df['text'].loc[df_mask] # create new dataframe of only digits from OCR
     df_PHN = df_digits.loc[df_digits.str.len() >= 8]  # create dataframe of possible PHN (numbers with greater than or equal to 8 digits)
-    possible_PHNs = list(df_digits.loc[(df_digits.str.len() > 4) & (df_digits.str.len() < 12)]) # create list of digits that are 5 to 12 characters in length
+    similiar_length_digits = list(df_digits.loc[(df_digits.str.len() > 4) & (df_digits.str.len() < 12)]) # append list of digits that are 5 to 12 characters in length
+
+    for digits in similiar_length_digits:
+        possible_PHNs.append(digits)
 
     return possible_PHNs
 
-# INPUT: ocr_df - pandas dataframe of document OCR
+# INPUT: ocr_str - string of document text
 # OUTPUT: possible_DOBs - list of possible date of births
 # DESCRIPTION: searches OCR dataframe and returns list of possible date of births for patient in ISO 8601 format (YYYY-MM-DD).
 def extract_DOB(ocr_str): #TODO differentiate if 2019/01/05 is found from January 5th 2019 (good) or May 5th 2019 (bad)
@@ -72,7 +91,7 @@ def extract_DOB(ocr_str): #TODO differentiate if 2019/01/05 is found from Januar
 
     return possible_DOBs
 
-# INPUT: document - string of document text
+# INPUT: ocr_df - pandas dataframe of document OCR
 # OUTPUT: names - list of names identified from rule based name extration and NLTK NER function
 # DESCRIPTION: output array of possible names
 def extract_names(ocr_df):
