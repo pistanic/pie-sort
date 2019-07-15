@@ -22,10 +22,10 @@ def extract_PHN(ocr_df, ocr_str):
 
     possible_PHNs = []
 
-    # METHOD 1: Find PHN through regular expressions to find "PHN" in ocr_string and return next word
+    # Step 1: Find PHN through regular expressions to find "PHN" in ocr_string and return next word
     string_list = ocr_str.split()
     pattern_PHN = r'\bphn\b|\bid\b'
-    p = re.compile(pattern_PHN, re.I)
+    p = re.compile(pattern_PHN, re.I) # re.I ignores case
     idx = [i for i, item in enumerate(string_list) if re.search(p, item)] # return index of "PHN" in string list
 
     for i in idx:
@@ -36,7 +36,7 @@ def extract_PHN(ocr_df, ocr_str):
         # eg. if string_list[i] is "PHN:12345678" or "PHN1234578" then the PHN number is in the same index
             possible_PHNs.append(re.sub("\D", "", string_list[i])) # appends only numeric characters of word
 
-    # METHOD 2: Find PHN through similar length digits
+    # Step 2: Find PHN through similar length digits ie. any digit more than 4 characters and less than 12
     #Strip everything except digits
     extraction_df['text'] = extraction_df['text'].str.replace("-","")
     extraction_df['text'] = extraction_df['text'].str.findall('(\d{7,11})')
@@ -53,6 +53,9 @@ def extract_PHN(ocr_df, ocr_str):
     for digits in similiar_length_digits:
         possible_PHNs.append(digits)
 
+    possible_PHNs = sorted(possible_PHNs, key=Counter(possible_PHNs).get, reverse=True) # sort list by highest number of occurences
+    possible_PHNs = list(dict.fromkeys(possible_PHNs)) # remove duplicates from list
+
     return possible_PHNs
 
 # INPUT: ocr_str - string of document text
@@ -63,18 +66,35 @@ def extract_DOB(ocr_str): #TODO differentiate if 2019/01/05 is found from Januar
     unformatted_dates = []
     possible_DOBs = []
 
+    # Step 1: Find DOB through regular expressions to find DOB pattern in ocr_string and use nlp to find date in words after
+    string_list = ocr_str.split()
+    pattern_date = r'\bdob\b|\bDate of Birth\b|\bbirth date\b|\bbirthday\b'
+    p = re.compile(pattern_date, re.I) # re.I ignores case
+    idx = [i for i, item in enumerate(string_list) if re.search(p, item)]  # return index of pattern in string list
+
+    for i in idx:
+        index_date = re.sub(p, "", string_list[i]) # eg. 'DOB:04-Jul-1943' -> :04-Jul-1943
+        if index_date: # if not empty string
+            if index_date[0] == ":" or "-" or ";": # eg. :04-Jul-1943
+                index_date = index_date[1:] # remove first character
+
+        unformatted_dates.append(index_date)  # append date
+        unformatted_dates.append(index_date+" "+string_list[+1]+" "+string_list[+2])
+        unformatted_dates.append(string_list[+1])
+        unformatted_dates.append(string_list[+1]+" "+string_list[+2]+" "+string_list[+3])
+
+
+    # Step 2: Find DOB through natural language processing of doc string
     doc = nlp(ocr_str)
 
-    # use nlp to find dates in document
     for ent in doc.ents:
-        if (ent.label_ == 'DATE'):
-            unformatted_dates.append(ent)
+        if (ent.label_ == 'DATE'):     # use nlp to find dates in document
+            unformatted_dates.append(ent) # append date
 
     print('extract_DOB debug - DOB List:')
     print(unformatted_dates)
 
     # convert unformatted dates to ISO 8601 format (YYYY-MM-DD) using EAFP practice (easier to ask forgiveness than permission)
-
     for date in unformatted_dates:
         try:
             try:
@@ -89,6 +109,9 @@ def extract_DOB(ocr_str): #TODO differentiate if 2019/01/05 is found from Januar
         except ValueError:
             print("extract_DOB debug - '" + date.__str__() + "' is not in a readable date format")
 
+    possible_DOBs = sorted(possible_DOBs, key=Counter(possible_DOBs).get, reverse=True)  # sort list by highest number of occurences
+    possible_DOBs = list(dict.fromkeys(possible_DOBs))  # remove duplicates from list
+
     return possible_DOBs
 
 # INPUT: ocr_df - pandas dataframe of document OCR
@@ -96,6 +119,8 @@ def extract_DOB(ocr_str): #TODO differentiate if 2019/01/05 is found from Januar
 # DESCRIPTION: output array of possible names
 def extract_names(ocr_df):
     possible_names = []
+
+    # Find names through rule based on capitalized letters filtered with named entity recognition
     ruled_names = rule_based_names(ocr_df)
 
     for name in ruled_names:
@@ -122,7 +147,13 @@ def extract_names(ocr_df):
 def rule_based_names(ocr_df):
     capitalized_words = []
 
-    for i in range(0, ocr_df.shape[0] - 1):
+    # Step 1: use regular expressions to find pattern in ocr_df and remove ie. Nom:David -> David
+    pattern_name = r'\bname\b|\bnom\b|\bpatient\b'
+    p = re.compile(pattern_name, re.I) # re.I ignores case
+    ocr_df['text'] = ocr_df['text'].str.replace(p, ' ', regex=True) # remove pattern
+    ocr_df['text'] = ocr_df['text'].str.replace('\W', ' ') # remove special characters
+
+    for i in range(0, ocr_df.shape[0]-2):
         if ocr_df['text'].iloc[i][0].isupper() and ocr_df['text'].iloc[i + 1][0].isupper():
             if ocr_df['text'].iloc[i][-1] == ",":
                 # if format of name is 'Trudeau, Justin'
