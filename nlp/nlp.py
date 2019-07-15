@@ -98,7 +98,7 @@ def extract_names(ocr_df):
     return possible_names
 
 # INPUT: ocr_df - pandas dataframe of document OCR
-# OUTPUT: possible_names - list of possible names
+# OUTPUT: possible_names - list of possible names in Title Case
 # DESCRIPTION: searches OCR dataframe and returns list of names based on if word is capitalized
 def rule_based_names(ocr_df):
     capitalized_words = []
@@ -108,15 +108,15 @@ def rule_based_names(ocr_df):
             if ocr_df['text'].iloc[i][-1] == ",":
                 # if format of name is 'Trudeau, Justin'
                 if ocr_df['text'].iloc[i + 1][-1] == ",":
-                    capitalized_words.append(ocr_df['text'].iloc[i + 1][:-1] + " " + ocr_df['text'].iloc[i][:-1])
+                    capitalized_words.append(ocr_df['text'].iloc[i + 1][:-1].title() + " " + ocr_df['text'].iloc[i][:-1].title())
                 else:
-                    capitalized_words.append(ocr_df['text'].iloc[i + 1] + " " + ocr_df['text'].iloc[i][:-1])
+                    capitalized_words.append(ocr_df['text'].iloc[i + 1].title() + " " + ocr_df['text'].iloc[i][:-1].title())
             else:
                 # if format of name is 'Justin Trudeau'
                 if ocr_df['text'].iloc[i + 1][-1] == ",":
-                    capitalized_words.append(ocr_df['text'].iloc[i + 1][:-1] + " " + ocr_df['text'].iloc[i])
+                    capitalized_words.append(ocr_df['text'].iloc[i + 1][:-1].title() + " " + ocr_df['text'].iloc[i].title())
                 else:
-                    capitalized_words.append(ocr_df['text'].iloc[i] + " " + ocr_df['text'].iloc[i + 1])
+                    capitalized_words.append(ocr_df['text'].iloc[i].title() + " " + ocr_df['text'].iloc[i + 1].title())
 
     return capitalized_words
 
