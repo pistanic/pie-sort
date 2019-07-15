@@ -54,13 +54,13 @@ def look_for_name(formatted_df, name):
     for i in range(len(idx)):
         text = names_df.loc[idx[i],'text']
         next_name = names_df.loc[idx[i],'next_name']
-        lookup_name = text + ' ' + next_name
+        lookup_name = text + ' ' + str(next_name)
         if (lookup_name == name):
             print ('look_for_name debug - ' +name + " has been validated with: "+lookup_name)
             return True
 
         previous_name = names_df.loc[idx[i], 'previous_name']
-        lookup_name = text + ' ' + previous_name
+        lookup_name = text + ' ' + str(previous_name)
         if (lookup_name == name):
             print ('look_for_name debug - ' +name + " has been validated with: "+lookup_name)
             return True
