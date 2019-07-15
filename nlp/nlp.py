@@ -9,14 +9,8 @@
 # NLP module to find patient identifiers from OCR
 import nltk
 import spacy
+from collections import Counter
 from dateutil.parser import parse
-
-# ******* Libraries not in use *************
-#import stanfordnlp
-#import nltk
-#from nltk.corpus import stopwords
-#stop = stopwords.words('english')
-
 
 # INPUT: ocr_df - pandas dataframe of document OCR
 # OUTPUT: possible_names - list of possible names
@@ -78,48 +72,59 @@ def extract_DOB(ocr_str): #TODO differentiate if 2019/01/05 is found from Januar
 
     return possible_DOBs
 
-# INPUT: ocr_df - pandas dataframe of document OCR
-# OUTPUT: possible_names - list of possible names
-# DESCRIPTION: searches OCR dataframe and returns list of names for patient (HACK METHOD BECAUSE FUNCTION WILL FAIL IF ALL TEXT ARE UPPERCASE)
-def hack_extract_names(ocr_df):
+# INPUT: document - string of document text
+# OUTPUT: names - list of names identified from rule based name extration and NLTK NER function
+# DESCRIPTION: output array of possible names
+def extract_names(ocr_df):
     possible_names = []
+    ruled_names = rule_based_names(ocr_df)
+
+    for name in ruled_names:
+        word_tag = pos_tagging(name)
+        named_ent = nltk.ne_chunk(word_tag[0])
+
+        i = 0
+        while i < len(named_ent):
+            if type(named_ent[i]) == nltk.tree.Tree:
+                if named_ent[i]._label == 'PERSON':
+                    possible_names.append(name) # add possible names to array
+            i = i + 1
+
+    possible_names = sorted(possible_names, key=Counter(possible_names).get, reverse=True) # sort list by highest number of occurences
+    possible_names = list(dict.fromkeys(possible_names)) # remove duplicates from list
+
+    print("nlp.extract_names debug - # of rule based names: " + str(len(ruled_names)))
+    print("nlp.extract_names debug - # after NER Filtering: " + str(len(possible_names)))
+    return possible_names
+
+# INPUT: ocr_df - pandas dataframe of document OCR
+# OUTPUT: possible_names - list of possible names in Title Case
+# DESCRIPTION: searches OCR dataframe and returns list of names based on if word is capitalized
+def rule_based_names(ocr_df):
+    capitalized_words = []
 
     for i in range(0, ocr_df.shape[0] - 1):
         if ocr_df['text'].iloc[i][0].isupper() and ocr_df['text'].iloc[i + 1][0].isupper():
             if ocr_df['text'].iloc[i][-1] == ",":
                 # if format of name is 'Trudeau, Justin'
                 if ocr_df['text'].iloc[i + 1][-1] == ",":
-                    possible_names.append(ocr_df['text'].iloc[i + 1][:-1] + " " + ocr_df['text'].iloc[i])
+                    capitalized_words.append(ocr_df['text'].iloc[i + 1][:-1].title() + " " + ocr_df['text'].iloc[i][:-1].title())
                 else:
-                    possible_names.append(ocr_df['text'].iloc[i + 1][:-1] + " " + ocr_df['text'].iloc[i])
+                    capitalized_words.append(ocr_df['text'].iloc[i + 1].title() + " " + ocr_df['text'].iloc[i][:-1].title())
             else:
                 # if format of name is 'Justin Trudeau'
                 if ocr_df['text'].iloc[i + 1][-1] == ",":
-                    possible_names.append(ocr_df['text'].iloc[i + 1][:-1] + " " + ocr_df['text'].iloc[i])
+                    capitalized_words.append(ocr_df['text'].iloc[i + 1][:-1].title() + " " + ocr_df['text'].iloc[i].title())
                 else:
-                    possible_names.append(ocr_df['text'].iloc[i] + " " + ocr_df['text'].iloc[i + 1])
-    return possible_names
+                    capitalized_words.append(ocr_df['text'].iloc[i].title() + " " + ocr_df['text'].iloc[i + 1].title())
 
+    return capitalized_words
 
 # INPUT: document - string of document text
 # OUTPUT: tagged_words - array of text with parts of speech tagging
-# DESCRIPTION: Tokenize string  and return array of parts of speech tagging
+# DESCRIPTION: Tokenize string and return array of parts of speech tagging
 def pos_tagging(document):
     sentences = nltk.sent_tokenize(document)
     words = [nltk.word_tokenize(sent) for sent in sentences]
     tagged_words = [nltk.pos_tag(word) for word in words]
     return tagged_words
-
-# INPUT: document - string of document text
-# OUTPUT: names - list of names identified from document text with NLTK NER function
-# DESCRIPTION: output array of possible  names using NLTK Named Entity Recognition
-def extract_names(document):
-    names = []
-    tagged = pos_tagging(document)
-    named_ent = nltk.ne_chunk(tagged[0])
-    for chunk in named_ent:
-        if type(chunk) == nltk.tree.Tree:
-            if chunk.label() == 'PERSON':
-                names.append(' '.join([c[0] for c in chunk])) # add possible names to array
-    return names
-
