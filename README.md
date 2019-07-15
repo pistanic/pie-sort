@@ -18,6 +18,10 @@ Project is created with:
 * NLTK (3.4.3)
 * spaCey (2.1.4)
 
+# Dependencies
+Install requirements with:
+pip install -r requirements.txt
+
 # How it works
 1. To run this program locally install by cloning basic pipeline repository
     ```shell
@@ -31,6 +35,7 @@ patient database defined in "searchHelp" module and output validated patients to
 
 # Project Status
  The basic pipeline is a simple verification algorithm, which uses the
+
  Hello World pipeline with the addition of image preprocessing and a
  PHN verification. This pipeline provides a level of
  pipeline accuracy and success that will be improved upon in the future pipelines.
