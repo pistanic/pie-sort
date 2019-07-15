@@ -22,6 +22,8 @@ def main():
     IMG_DIR = TMP_DIR+'img/'
     TXT_DIR = TMP_DIR+'txt/'
 
+    docMan.init_folders([PDF_DIR, TMP_DIR, SORT_DIR, IMG_DIR, TXT_DIR])
+
     patient_database = searchHelp.init_test_db()
 
     # Print Verification database

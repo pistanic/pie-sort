@@ -14,6 +14,13 @@ from os.path import isfile, join, splitext, basename
 from shutil import rmtree
 from pdf2image import convert_from_path
 
+# INPUT: List of dirs to create
+def init_folders(dir_list):
+    for dir_ in dir_list:
+        try:
+            makedirs(dir_)
+        except:
+            print('file directory already exists')
 
 # INPUT: Path to files
 # OUTPUT: List of files in path

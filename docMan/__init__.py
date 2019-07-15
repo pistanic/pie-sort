@@ -1,4 +1,5 @@
-# Import functions from docMan.py
+# Import functions from docMan.pya
+from .docMan import init_folders
 from .docMan import get_file_list
 from .docMan import get_image_name
 from .docMan import delete_dir
