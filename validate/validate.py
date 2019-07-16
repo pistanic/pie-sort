@@ -24,6 +24,8 @@ def format_df(df):
         if(ftxt.endswith(',')):
             ftxt = ftxt[:-1]
             df.at[index, 'text'] = ftxt
+    df['text'] = df['text'].str.strip() # remove leading and trailing characters in Series/Index
+
     return df
 
 # INPUT: formatted_df - dataframe of ocr output with comma striped.

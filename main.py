@@ -45,7 +45,7 @@ def main():
         img_path = IMG_DIR+image_name
 
         # Preprocessing Stage
-        #img_path = preproc.pre_process(img_path)
+        img_path = preproc.pre_process(img_path)
 
         # OCR Stage
         printf('txt_dir + img_name',TXT_DIR+image_name)
