@@ -44,8 +44,10 @@ def main():
         print('image_name', image_name)
         img_path = IMG_DIR+image_name
 
-        # Preprocessing Stage
-        img_path = preproc.pre_process(img_path)
+        # Apply first layer of preprocessing.
+        # Resize will increase the size of the immage and apply a mild blur
+        # to average pixle values after they have been stretched.
+        img_path = preproc.resize(img_path)
 
         # OCR Stage
         printf('txt_dir + img_name',TXT_DIR+image_name)
@@ -57,44 +59,23 @@ def main():
 
         printf('TXT_DIR+image_name.replace(.jpg)',TXT_DIR+image_name.replace('.jpg',''))
 
-        txt_path = TXT_DIR+image_name.replace('.jpg','')
-        printf('txt_path',txt_path)
-        ocr.extract_text(img_path, txt_path)
-        ocr_df = ocr.text_to_dataframe(txt_path)
-        printf('ocr_df:', ocr_df)
-        ocr_str = ocr.extract_string(img_path)
 
-        # AOI Masking Demo
-        PHN_AOI_demo = 'Sidney'
-        aoi_df = searchHelp.PHN_Document_Box_Search(PHN_AOI_demo,ocr_df,500,500)
-        printf('Area of Interest Dataframe', aoi_df)
+        txt_path = TXT_DIR+image_name.replace('.jpg','')
+
+        # Ocr Processing stage Create a text file from the image and use that
+        # text file to produce the ocr data frame. Also create ocr string directly
+        # from the image. Both are returned as ocr_list.
+        # ocr_list = [ocr_df, ocr_str]
+        ocr_list = ocr.processing(img_path, txt_path)
 
         # NLP Stage
-        # Create list of possible PHNs for patient
-        PHNs = nlp.extract_PHN(ocr_df, ocr_str)
-        printf('List of possible PHNs from document', PHNs)
+        # Extract the identifying infromation from contents of ocr_list
+        # id_list = [PHNs, names, DOBs]
+        id_list = nlp.processing(ocr_list)
 
-        # Create list of possible names for patient
-        names = nlp.extract_names(ocr_df)
-        printf('List of possible names from document', names)
-
-        # Create list of possible date of births for patient
-        DOBs = nlp.extract_DOB(ocr_str)
-        printf('List of possible DOBs from document', DOBs)
-
-        # Strip master dataframe of all commas after most processing has been done.
-        #printf('Formatted data frame', formatted_df)
-
-        #Access confedence for the first instance of 'Contrast'
-        #name_cand_dict[<Key>][<First/Last>][instance][data]
-        #name_cand_dict = ocr.create_name_candidates(hack_names, comma_free_df)
-
-        #Validate debug
-        df_list = [ocr_df, ocr_str, patient_database]
-        personal_id = [names, PHNs]
-        printf('PHN LIST: ',PHNs)
-
-        if (validate.validate(df_list, personal_id)):
+        #Validate stage
+        printf('Stage Of validation','Preproc = resize')
+        if (validate.validate(ocr_list, id_list, patient_database)):
             validated_docs.append(file_,)
             num_val_docs = 1 + num_val_docs
             #dist_path = SORT_DIR+valid_phn+'/'+file_
@@ -105,7 +86,15 @@ def main():
             #docMan.un_sort(dist_path, source_path)
             # ---------------- #
         else:
-            failed_docs.append(file_)
+            printf('Stage Of validation','Preproc = filter')
+            preproc.filtering(img_path)
+            ocr_list = ocr.processing(img_path, txt_path)
+            id_list = nlp.processing(ocr_list)
+            if (validate.validate(ocr_list, id_list, patient_database)):
+                validated_docs.append(file_,)
+                num_val_docs = 1 + num_val_docs
+            else:
+                failed_docs.append(file_)
 
     printf('Number of Validated Documents out of '+str(len(file_list)),num_val_docs)
     printf('Accuracy', (num_val_docs/len(file_list)))

@@ -79,6 +79,9 @@ def extract_string(img_path):
 #   N     |       |          |           |         |          |          |      |     |       |        |      |      | /
 #         +-------+----------+-----------+---------+----------+----------+------+-----+-------+--------+------+------+/
 
+#Access confedence for the first instance of 'Contrast'
+#name_cand_dict[<Key>][<First/Last>][instance][data]
+#name_cand_dict = ocr.create_name_candidates(hack_names, comma_free_df)
 
 # INPUT: names - list of potential names for patient
 #        formatted_df - formatted pandas dataframe of OCR data
@@ -110,4 +113,18 @@ def create_phn_candidates(phns, formatted_df):
         phn_candidate_dict[phn] = row_data.values
 
     return phn_candidate_dict
+
+# INPUT: img_path path to the image
+#      : txt_path path to place text file
+# OUTPUT: ocr_list = [ocr_df, ocr_str]
+# Description: Handle the ocr processing and return used values.
+def processing(img_path, txt_path):
+    extract_text(img_path, txt_path)
+    print('ocr processing debug - txt_path: '+str(txt_path))
+    ocr_df = text_to_dataframe(txt_path)
+    print('ocr processing debug - ocr_df:')
+    print(ocr_df)
+    ocr_str = extract_string(img_path)
+
+    return [ocr_df, ocr_str]
 
