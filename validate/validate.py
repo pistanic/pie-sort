@@ -150,23 +150,16 @@ def name_primary(df_list, personal_id):
 
     # Merge all hits df as long as they are not empty.
     # If first or last is empty, set the hits_df to first OR last. Middle will be neglected.
-    if not (first_hits.empty or last_hits.empty):
-        merge_col = ['First_Name', 'Middle_Name', 'Last_Name', 'PHN']
-        hits_df = pd.merge(first_hits, last_hits, on=merge_col, how='outer')
-        if not mid_hits.empty:
-            hits_df = pd.merge(hits_df, mid_hits, on=merge_col, how='outer')
-    else:
-        if first_hits.empty:
-            hits_df = last_hits
-        elif last_hits.empty:
-            hits_df = first_hits
-        else:
-            print("validation debug - NO HITS! ALL DF EMPTY")
+    merge_col = ['First_Name', 'Middle_Name', 'Last_Name', 'PHN']
+    hits_df = pd.merge(first_hits, last_hits, on=merge_col, how='outer')
+    hits_df = pd.merge(hits_df, mid_hits, on=merge_col, how='outer')
 
     print('validation debug- Hits_df:')
     print(hits_df)
+
     # if this df is empty all hits in first, mid, last were unique.
     if hits_df.empty:
+        print("validation debug - NO HITS! ALL DF EMPTY")
         return False
 
      # check hits df for phn to confirm
