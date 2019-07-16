@@ -86,6 +86,12 @@ def PHN_Document_Box_Search(PHN,df,search_width,search_height):
 
     return complete_search_result_df
 
+## AOI Masking Demo
+#PHN_AOI_demo = 'Sidney'
+#aoi_df = searchHelp.PHN_Document_Box_Search(PHN_AOI_demo,ocr_df,500,500)
+#printf('Area of Interest Dataframe', aoi_df)
+
+
 # INPUT: df - Datafame to searh
 #        column - column to search
 #        value - value to look up

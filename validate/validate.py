@@ -184,7 +184,13 @@ def name_primary(df_list, personal_id):
         print('Validation debug name_primary - FAILED - PHN not found in hits df')
         return False
 
-def validate(df_list, personal_id):
+def validate(df_list, personal_id, database):
+    # TODO Fix pass database seperatly. This is a hack cuz Im tired and
+    # want to finish this refactor
+    # should also make nameing more consistent... from main input is:
+    # ocr_list and id_list
+    df_list.append(database)
+
     validated = False
     # TODO return validated name and phn.
     valid_phn = None

@@ -178,3 +178,24 @@ def pos_tagging(document):
     words = [nltk.word_tokenize(sent) for sent in sentences]
     tagged_words = [nltk.pos_tag(word) for word in words]
     return tagged_words
+
+def processing(ocr_list):
+    ocr_df = ocr_list[0]
+    ocr_str = ocr_list[1]
+
+    PHNs = extract_PHN(ocr_df, ocr_str)
+    print('Nlp processing debug - List of possible PHNs from document:')
+    print(PHNs)
+
+    # Create list of possible names for patient
+    names = extract_names(ocr_df)
+    print('Nlp processing debug - List of possible names from document:')
+    print(names)
+
+    # Create list of possible date of births for patient
+    DOBs = extract_DOB(ocr_str)
+    print('Nlp processing debug - List of possible DOBs from document:')
+    print(DOBs)
+
+    return [names,PHNs, DOBs]
+
