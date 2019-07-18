@@ -8,11 +8,36 @@
 
 # Document Managment module.
 import tempfile
+import pandas
 from datetime import datetime
 from os import listdir, remove, rename, makedirs
 from os.path import isfile, join, splitext, basename
 from shutil import rmtree
 from pdf2image import convert_from_path
+
+def init_validation_df(excel_path):
+    df = pandas.read_excel(excel_path)
+
+    new = df['PatientName'].str.split(",", n = 1, expand = True)
+
+    df['Last_Name'] = new[0]
+    df['Last_Name'] = df['Last_Name'].str.title()
+    df['First_Middle'] = new[1]
+    df.drop(columns=['PatientName'], inplace=True)
+
+   # new = df['First Middle'].str.strip()
+    new = df['First_Middle'].str.split(" ", expand = True)
+    df['First_Name'] = new[1]
+    df['Middle_Name'] = new[2]
+    df.drop(columns=['First_Middle'], inplace=True)
+    df['First_Name'] = df['First_Name'].str.title()
+    df['Middle_Name'] = df['Middle_Name'].str.title()
+    df['First_Name'] = df['First_Name'].str.strip()
+    df['Middle_Name'] = df['Middle_Name'].str.strip()
+
+    df = df.applymap(str)
+
+    return df
 
 # INPUT: List of dirs to create
 def init_folders(dir_list):
