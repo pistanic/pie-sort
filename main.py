@@ -15,6 +15,7 @@ def printf(name, value):
 
 def main():
     LOCAL_DIR = './'
+    #PDF_DIR = LOCAL_DIR+'PDF/'
     PDF_DIR = LOCAL_DIR+'PDF/'
     TMP_DIR = LOCAL_DIR+'tmp/'
     SORT_DIR = LOCAL_DIR+'pd/'
@@ -32,7 +33,7 @@ def main():
     file_list = docMan.get_file_list(PDF_DIR)
     try:
         # Counter to terminate program after a set number of iterations
-        max_num_docs = 10
+        max_num_docs = 200
         cur_num_docs = 0
         # Validation Stats
         num_val_docs = 0

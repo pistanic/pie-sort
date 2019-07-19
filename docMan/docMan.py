@@ -10,7 +10,8 @@
 import tempfile
 from datetime import datetime
 from os import listdir, remove, rename, makedirs
-from os.path import isfile, join, splitext, basename
+import os.path
+from os.path import isfile, join, splitext, basename, exists
 from shutil import rmtree
 from pdf2image import convert_from_path
 import pandas as pd
@@ -20,48 +21,53 @@ from dateutil.parser import parse
 # OUTPUT: df - Patient dataframe in correct format for validation
 # DESCRIPTION: This function imports the patient database and returns a formatted dataframe
 def init_validation_df(excel_path):
-    patient_df = pd.read_excel(excel_path) # need to reformat 'PatientName' and 'DOB' columns
-
-    # Transform patient name into "Last_Name", "Middle_Name" and "First_Name" columns in title case
-    name_patient_df = patient_df['PatientName'].str.split(",", n = 1, expand = True)
-    patient_df['Last_Name'] = name_patient_df[0]
-    patient_df['Last_Name'] = patient_df['Last_Name'].str.title()
-    patient_df['First_Middle'] = name_patient_df[1]
-    patient_df.drop(columns=['PatientName'], inplace=True)
-    name_patient_df = patient_df['First_Middle'].str.split(" ", expand = True)
-    patient_df['First_Name'] = name_patient_df[1]
-    patient_df['Middle_Name'] = name_patient_df[2]
-    patient_df.drop(columns=['First_Middle'], inplace=True)
-    patient_df['First_Name'] = patient_df['First_Name'].str.title() # convert to title case
-    patient_df['Middle_Name'] = patient_df['Middle_Name'].str.title()
-    patient_df['First_Name'] = patient_df['First_Name'].str.strip() # strip leading and trailing spaces
-    patient_df['Middle_Name'] = patient_df['Middle_Name'].str.strip()
-
-    # Transform date of birth into 'DOB-YYYY', 'DOB-MM', 'DOB-DD'  columns in correct format
-    dates_df = pd.DataFrame(columns=['DOB-YYYY', 'DOB-MM', 'DOB-DD'])
-
-    dates_ls = patient_df['DOB'].tolist()
-
-    # Convert unformatted dates to ISO 8601 format (YYYY-MM-DD) using EAFP practice (easier to ask forgiveness than permission)
-    for date in dates_ls:
-        try:
-            obj = parse(date.__str__())
-            new_date_df = pd.DataFrame({'DOB-YYYY': [str(obj.strftime('%Y'))],
-                                        'DOB-MM': [str(obj.strftime('%m'))],
-                                        'DOB-DD': [str(obj.strftime('%d'))]})
-            dates_df = dates_df.append(new_date_df, ignore_index=True)
-
-        except ValueError:
-            print("init_validation_df debug - '" + date.__str__() + "' is not in a readable date format")
-
-    patient_df.join(dates_df)
-    patient_df.drop(columns=['DOB'], inplace=True)
-
-    patient_df = patient_df.applymap(str) # converts data to string format
-
-    return patient_df
 
 
+    if os.path.exists('pie_patient_db.csv'):     # ****************** needs to be debugged ****************
+        patient_df = pd.read_csv(r'pie_patient_db.csv')
+        return patient df
+
+    else:
+        patient_df = pd.read_excel(excel_path) # need to reformat 'PatientName' and 'DOB' columns
+        patient_df = patient_df.applymap(str) # converts data to string format
+
+        # Transform patient name into "Last_Name", "Middle_Name" and "First_Name" columns in title case
+        name_patient_df = patient_df['PatientName'].str.split(",", n = 1, expand = True)
+        patient_df['Last_Name'] = name_patient_df[0]
+        patient_df['Last_Name'] = patient_df['Last_Name'].str.title()
+        patient_df['First_Middle'] = name_patient_df[1]
+        patient_df.drop(columns=['PatientName'], inplace=True)
+        name_patient_df = patient_df['First_Middle'].str.split(" ", expand = True)
+        patient_df['First_Name'] = name_patient_df[1]
+        patient_df['Middle_Name'] = name_patient_df[2]
+        patient_df.drop(columns=['First_Middle'], inplace=True)
+        patient_df['First_Name'] = patient_df['First_Name'].str.title() # convert to title case
+        patient_df['Middle_Name'] = patient_df['Middle_Name'].str.title()
+        patient_df['First_Name'] = patient_df['First_Name'].str.strip() # strip leading and trailing spaces
+        patient_df['Middle_Name'] = patient_df['Middle_Name'].str.strip()
+
+        # Transform date of birth into 'DOB-YYYY', 'DOB-MM', 'DOB-DD'  columns in correct format
+        dates_df = pd.DataFrame(columns=['DOB-YYYY', 'DOB-MM', 'DOB-DD'])
+
+        dates_ls = patient_df['DOB'].tolist()
+
+        # Convert unformatted dates to ISO 8601 format (YYYY-MM-DD) using EAFP practice (easier to ask forgiveness than permission)
+        for date in dates_ls:
+            try:
+                obj = parse(date.__str__())
+                new_date_df = pd.DataFrame({'DOB-YYYY': [str(obj.strftime('%Y'))],
+                                            'DOB-MM': [str(obj.strftime('%m'))],
+                                            'DOB-DD': [str(obj.strftime('%d'))]})
+                dates_df = dates_df.append(new_date_df, ignore_index=True)
+
+            except ValueError:
+                print("init_validation_df debug - '" + date.__str__() + "' is not in a readable date format")
+
+        patient_df.join(dates_df)
+        patient_df.drop(columns=['DOB'], inplace=True)
+        patient_df.to_csv(r'.\pie_patient_db.csv'), index=False)
+
+        return patient_df
 
 # INPUT: List of dirs to create
 def init_folders(dir_list):
