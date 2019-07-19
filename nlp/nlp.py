@@ -13,6 +13,12 @@ import re
 from collections import Counter
 from dateutil.parser import parse
 
+# INPUT: string - string of text
+# OUTPUT: Number of digits in string of text
+# DESCRIPTION: Given a string function returns number of digits ie: abc-123456 returns 6
+def count_digits(string):
+    return sum(item.isdigit() for item in string)
+
 # INPUT: ocr_df - pandas dataframe of document OCR
 #        ocr_str - string of document text
 # OUTPUT: possible_names - list of possible names
@@ -37,7 +43,29 @@ def extract_PHN(ocr_df, ocr_str):
             possible_PHNs.append(re.sub("\D", "", string_list[i])) # appends only numeric characters of word
 
     # Step 2: Find PHN through similar length digits ie. any digit more than 4 characters and less than 12
-    #Strip everything except digits
+
+    # ************************************** NEW NEEDS TO BE TESTED IN CLINIC **************************************
+
+    # Case where PHN is PHN:12345678-00, 12345678-00, PHN:12345678_000, etc
+    count_df = pd.DataFrame(columns=['digit_count'])
+
+    count_df['digit_count'] = extraction_df['text'].apply(count_digits)  # count number of digits ie. PHN123456 returns 6
+    count_df = count_df.join(extraction_df)
+
+    count_df = count_df[count_df['digit_count'] > 9]
+    for i in range(len(count_df)):
+        if len(count_df['text'].iloc[i]) - count_df['text'].iloc[i].rfind('-') == 4:  # find placement of last "-"
+            possible_PHNs.append(re.sub("\D", "", count_df['text'].iloc[i][:-4]))  # strip anything after last "-" and append only characters to list
+        if len(count_df['text'].iloc[i]) - count_df['text'].iloc[i].rfind('-') == 3:
+            possible_PHNs.append(re.sub("\D", "", count_df['text'].iloc[i][:-3]))
+        if len(count_df['text'].iloc[i]) - count_df['text'].iloc[i].rfind('_') == 4:
+            possible_PHNs.append(re.sub("\D", "", count_df['text'].iloc[i][:-4]))
+        if len(count_df['text'].iloc[i]) - count_df['text'].iloc[i].rfind('_') == 3:
+            possible_PHNs.append(re.sub("\D", "", count_df['text'].iloc[i][:-3]))
+
+    # ********************************************** END OF NEW **********************************************
+
+    # Strip everything except digits
     extraction_df['text'] = extraction_df['text'].str.replace("-","")
     extraction_df['text'] = extraction_df['text'].str.findall('(\d{7,11})')
     extraction_df['text'] = extraction_df['text'].apply(', '.join)
