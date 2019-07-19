@@ -12,6 +12,7 @@ import spacy
 import re
 from collections import Counter
 from dateutil.parser import parse
+import pandas as pd
 
 # INPUT: string - string of text
 # OUTPUT: Number of digits in string of text
@@ -107,9 +108,9 @@ def extract_DOB(ocr_str): #TODO differentiate if 2019/01/05 is found from Januar
                 index_date = index_date[1:] # remove first character
 
         unformatted_dates.append(index_date)  # append date
-        unformatted_dates.append(index_date+" "+string_list[+1]+" "+string_list[+2])
-        unformatted_dates.append(string_list[+1])
-        unformatted_dates.append(string_list[+1]+" "+string_list[+2]+" "+string_list[+3])
+        unformatted_dates.append(index_date+" "+string_list[i+1]+" "+string_list[i+2])
+        unformatted_dates.append(string_list[i+1])
+        unformatted_dates.append(string_list[i+1]+" "+string_list[i+2]+" "+string_list[i+3])
 
 
     # Step 2: Find DOB through natural language processing of doc string

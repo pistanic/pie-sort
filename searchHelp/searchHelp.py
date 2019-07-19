@@ -128,6 +128,30 @@ def get_name_from_phn(db, phn):
     last_name = patient_df['Last_Name'].values[0]
     return first_name + ' ' +last_name
 
+
+# INPUT: patient_df - database to filter
+#        dobs - list of dates in YYYY-MM-DD format to filter df
+# OUTPUT: candidate_df - filtered patient df by looking at only patients with specified dob
+def filter_df_from_dob(patient_df, dobs):
+
+    # ***************** CHECK THESE COLUMN NAMES *******************
+    candidate_df = pd.DataFrame(columns=['First_Name', 'Middle_Name', 'Last_Name', 'PHN', 'DOB-YYYY', 'DOB-MM', 'DOB-DD','Filepath'])
+
+    # Cutting up the each YYYY-MM-DD dob string
+    for i in range(len(dobs)):
+        year = dobs[i][0:4]
+        month = dobs[i][5:7]
+        day = dobs[i][8:10]
+
+        # Filtering patient dataframe by date of birth
+        filtered_df = patient_df[(patient_df['DOB-YYYY'] == year) & (patient_df['DOB-MM'] == month) & (patient_df['DOB-DD'] == day)]
+
+        candidate_df = candidate_df.append(filtered_df) # append filtered dataframe from each date
+
+    return candidate_df
+
+
+
 # INPUT: df - Dataframe to search
 #        column - Dataframe column descriptor
 #        searchValue - value to loacate in dataframe.

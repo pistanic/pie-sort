@@ -8,6 +8,7 @@
 import pandas as pd
 
 import searchHelp
+import nlp
 
 # INPUT: dataframe
 # OUTPUT: dataframe with all commas removed from the end of text.
@@ -88,16 +89,16 @@ def phn_primary(df_list, phn):
         print('phn_primary debug - name validated')
         success_flag = True
 
-   dob = searchHelp.get_dob_from_phn(database, phn)
-   if dob == "Nan-Nan-Nan":
+    dob = searchHelp.get_dob_from_phn(database, phn)
+    if dob == "Nan-Nan-Nan":
        print('phn_primary debug - NO DOB FOUND IN DB')
        return success_flag
 
     for doc_dob in nlp.extract_DOB(ocr_str):
-      print('phn_primary debug - checking database DB: '+dob+' against ocr dob: '+doc_dob)
-       if dob == doc_dob:
-           success_flag = True
-           print('phn_primary debug - DOB validated')
+        print('phn_primary debug - checking database DB: '+dob+' against ocr dob: '+doc_dob)
+        if dob == doc_dob:
+            success_flag = True
+            print('phn_primary debug - DOB validated')
 
     return success_flag
 
@@ -176,6 +177,34 @@ def name_primary(df_list, personal_id):
         print('Validation debug name_primary - FAILED - PHN not found in hits df')
         return False
 
+
+# INPUT: df_list - List of data frames passed from main
+#        dob - dob to validate
+# OUTPUT: true if the phn or name have been verified against the phn.
+# DESCRIPTION: Given a date of birth, check if names or PHN match the document
+def DOB_primary(ocr_df_list, personal_id, database):
+    ocr_df = ocr_df_list[0]
+    ocr_str = ocr_df_list[1]
+    name_list = personal_id[0]
+    phns = personal_id[1]
+    dobs = personal_id[2]
+
+    filtered_patient_df = searchHelp.filter_df_from_dob(database, dobs) # returns df of patient information who have specified date of birth
+
+    for i in range(len(filtered_patient_df)): #TODO Finish DOB Primary
+
+        #check to see if an extracted name matches a name is in the filtered data frame
+        for name in name_list:
+            name = name.split()
+
+            # check each subname in database
+            for subname in name:
+                # if subname found in patient dataframe then return that row to check information with ocr data
+                if not filtered_patient_df.loc[(filtered_patient_df['First_Name']==subname)|(filtered_patient_df['Middle_Name']==subname)|(filtered_patient_df['Last_Name']==subname)].empty:
+                    found_df = filtered_patient_df.loc[(filtered_patient_df['First_Name']==subname)|(filtered_patient_df['Middle_Name']==subname)|(filtered_patient_df['Last_Name']==subname)]
+
+
+
 def validate(df_list, personal_id, database):
     # TODO Fix pass database seperatly. This is a hack cuz Im tired and
     # want to finish this refactor
@@ -184,6 +213,13 @@ def validate(df_list, personal_id, database):
     df_list.append(database)
 
     validated = False
+
+    # #Third stage validation by itself
+    # print("***** ATTEMPTING DOB_PRIMARY VALIDATION *****")
+    # if DOB_primary(df_list, personal_id, database):
+    #     validated = True
+
+
     # TODO return validated name and phn.
     valid_phn = None
     print("***** ATTEMPTING PHN_PRIMARY VALIDATION *****")
@@ -195,13 +231,18 @@ def validate(df_list, personal_id, database):
             break
     if(not validated):
         print("***** PHN_PRIMARY VALIDATION FAILED *****")
-        print()
+        # 2nd stage validation
         print("***** ATTEMPTING NAME_PRIMARY VALIDATION *****")
         if name_primary(df_list, personal_id):
             validated = True
-        else:
-            print("***** NAME_PRIMARY VALIDATION FAILED *****")
-            # Third stage validation
-            pass
+            print("***** NAME_PRIMARY VALIDATION SUCCESS *****")
+
+        # else:
+        #     print("***** NAME_PRIMARY VALIDATION FAILED *****")
+        #     # Third stage validation
+        #     print("***** ATTEMPTING DOB_PRIMARY VALIDATION *****")
+        #     if DOB_primary(df_list, personal_id):
+        #         validated = True
+        #         print("***** DOB_PRIMARY VALIDATION SUCCESS *****")
 
     return validated
