@@ -8,7 +8,6 @@
 import pandas as pd
 
 import searchHelp
-import nlp
 
 # INPUT: dataframe
 # OUTPUT: dataframe with all commas removed from the end of text.
@@ -89,16 +88,16 @@ def phn_primary(df_list, phn):
         print('phn_primary debug - name validated')
         success_flag = True
 
-   # dob = searchHelp.get_dob_from_phn(database, phn)
-   # if dob == "Nan-Nan-Nan":
-   #     print('phn_primary debug - NO DOB FOUND IN DB')
-   #     return success_flag
+   dob = searchHelp.get_dob_from_phn(database, phn)
+   if dob == "Nan-Nan-Nan":
+       print('phn_primary debug - NO DOB FOUND IN DB')
+       return success_flag
 
-    #for doc_dob in nlp.extract_DOB(ocr_str):
-    #   print('phn_primary debug - checking database DB: '+dob+' against ocr dob: '+doc_dob)
-    #    if dob == doc_dob:
-    #        success_flag = True
-    #        print('phn_primary debug - DOB validated')
+    for doc_dob in nlp.extract_DOB(ocr_str):
+      print('phn_primary debug - checking database DB: '+dob+' against ocr dob: '+doc_dob)
+       if dob == doc_dob:
+           success_flag = True
+           print('phn_primary debug - DOB validated')
 
     return success_flag
 

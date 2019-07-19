@@ -8,36 +8,60 @@
 
 # Document Managment module.
 import tempfile
-import pandas
 from datetime import datetime
 from os import listdir, remove, rename, makedirs
 from os.path import isfile, join, splitext, basename
 from shutil import rmtree
 from pdf2image import convert_from_path
+import pandas as pd
+from dateutil.parser import parse
 
+# INPUT: excel_path - Path to patient database excel file
+# OUTPUT: df - Patient dataframe in correct format for validation
+# DESCRIPTION: This function imports the patient database and returns a formatted dataframe
 def init_validation_df(excel_path):
-    df = pandas.read_excel(excel_path)
+    patient_df = pd.read_excel(excel_path) # need to reformat 'PatientName' and 'DOB' columns
 
-    new = df['PatientName'].str.split(",", n = 1, expand = True)
+    # Transform patient name into "Last_Name", "Middle_Name" and "First_Name" columns in title case
+    name_patient_df = patient_df['PatientName'].str.split(",", n = 1, expand = True)
+    patient_df['Last_Name'] = name_patient_df[0]
+    patient_df['Last_Name'] = patient_df['Last_Name'].str.title()
+    patient_df['First_Middle'] = name_patient_df[1]
+    patient_df.drop(columns=['PatientName'], inplace=True)
+    name_patient_df = patient_df['First_Middle'].str.split(" ", expand = True)
+    patient_df['First_Name'] = name_patient_df[1]
+    patient_df['Middle_Name'] = name_patient_df[2]
+    patient_df.drop(columns=['First_Middle'], inplace=True)
+    patient_df['First_Name'] = patient_df['First_Name'].str.title() # convert to title case
+    patient_df['Middle_Name'] = patient_df['Middle_Name'].str.title()
+    patient_df['First_Name'] = patient_df['First_Name'].str.strip() # strip leading and trailing spaces
+    patient_df['Middle_Name'] = patient_df['Middle_Name'].str.strip()
 
-    df['Last_Name'] = new[0]
-    df['Last_Name'] = df['Last_Name'].str.title()
-    df['First_Middle'] = new[1]
-    df.drop(columns=['PatientName'], inplace=True)
+    # Transform date of birth into 'DOB-YYYY', 'DOB-MM', 'DOB-DD'  columns in correct format
+    dates_df = pd.DataFrame(columns=['DOB-YYYY', 'DOB-MM', 'DOB-DD'])
 
-   # new = df['First Middle'].str.strip()
-    new = df['First_Middle'].str.split(" ", expand = True)
-    df['First_Name'] = new[1]
-    df['Middle_Name'] = new[2]
-    df.drop(columns=['First_Middle'], inplace=True)
-    df['First_Name'] = df['First_Name'].str.title()
-    df['Middle_Name'] = df['Middle_Name'].str.title()
-    df['First_Name'] = df['First_Name'].str.strip()
-    df['Middle_Name'] = df['Middle_Name'].str.strip()
+    dates_ls = patient_df['DOB'].tolist()
 
-    df = df.applymap(str)
+    # Convert unformatted dates to ISO 8601 format (YYYY-MM-DD) using EAFP practice (easier to ask forgiveness than permission)
+    for date in dates_ls:
+        try:
+            obj = parse(date.__str__())
+            new_date_df = pd.DataFrame({'DOB-YYYY': [str(obj.strftime('%Y'))],
+                                        'DOB-MM': [str(obj.strftime('%m'))],
+                                        'DOB-DD': [str(obj.strftime('%d'))]})
+            dates_df = dates_df.append(new_date_df, ignore_index=True)
 
-    return df
+        except ValueError:
+            print("init_validation_df debug - '" + date.__str__() + "' is not in a readable date format")
+
+    patient_df.join(dates_df)
+    patient_df.drop(columns=['DOB'], inplace=True)
+
+    patient_df = patient_df.applymap(str) # converts data to string format
+
+    return patient_df
+
+
 
 # INPUT: List of dirs to create
 def init_folders(dir_list):
@@ -69,7 +93,7 @@ def delete_file(path):
 # INPUT: pdf_path - path to PDF
 #        jpg_path - path to store .jpg
 # OUTPUT: base_filename - <file_name>.jpg
-# DESCRIPTION: This function converts a PDF to JPG immage format.
+# DESCRIPTION: This function converts a PDF to JPG image format.
 def pdf2jpg(pdf_path, jpg_path):
     #PDF to JPG
     with tempfile.TemporaryDirectory() as path:
