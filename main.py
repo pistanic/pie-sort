@@ -5,6 +5,7 @@ import ezRead
 import docMan # four source see: docMan/
 import searchHelp
 import validate
+import pandas as pd
 from os import makedirs
 
 def printf(name, value):
@@ -23,14 +24,18 @@ def main():
     TXT_DIR = TMP_DIR+'txt/'
 
     docMan.init_folders([PDF_DIR, TMP_DIR, SORT_DIR, IMG_DIR, TXT_DIR])
-    
+
     # test db
     #patient_database = searchHelp.init_test_db()
 
     # real db
-    patient_database = docMan.init_validation_df("../pdb.xlsx")
+    try:
+        patient_database = pd.read_csv('./pie_patient_db.csv')
+    except FileNotFoundError:
+        patient_database = docMan.init_validation_df("../pdb.xlsx")
 
     file_list = docMan.get_file_list(PDF_DIR)
+
     try:
         # Counter to terminate program after a set number of iterations
         max_num_docs = 200
