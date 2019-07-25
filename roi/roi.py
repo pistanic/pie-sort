@@ -2,28 +2,28 @@ import cv2 as cv
 import numpy as np
 import random as rng
 
-def dilate_to_text_line(edges, N, iterations):
+def dilate_to_text_line(edges, N, iterations, write_path):
     kernel = np.ones((1, N), np.uint8)
     dilated_image = cv.dilate(edges, kernel, iterations=iterations) #TODO figure out if which morphological transformation is better: dilate or closing
-    cv.imwrite(r'tmp/img/dilation/output_iteration-'+str(iterations)+'.jpg', dilated_image)
+    cv.imwrite(write_path+'/dilation-output_iteration-'+str(iterations)+'.jpg', dilated_image)
     closing_image = cv.morphologyEx(dilated_image, cv.MORPH_CLOSE, kernel)
-    cv.imwrite(r'tmp/img/dilation/closing_output_iteration-'+str(iterations)+'.jpg', closing_image)
+    cv.imwrite(write_path+'/dilation-closing_output_iteration-'+str(iterations)+'.jpg', closing_image)
     return closing_image
 
-def dilate_to_text_block(edges, N, iterations):
+def dilate_to_text_block(edges, N, iterations, write_path):
     kernel = np.ones((N, N), np.uint8)
     dilated_image = cv.dilate(edges, kernel, iterations=iterations) #TODO figure out if which morphological transformation is better: dilate or closing
-    cv.imwrite(r'tmp/img/dilation/output_iteration-'+str(iterations)+'.jpg', dilated_image)
+    cv.imwrite(write_path+'/dilation-output_iteration-'+str(iterations)+'.jpg', dilated_image)
     closing_image = cv.morphologyEx(dilated_image, cv.MORPH_CLOSE, kernel)
-    cv.imwrite(r'tmp/img/dilation/closing_output_iteration-'+str(iterations)+'.jpg', closing_image)
+    cv.imwrite(write_path+'/dilation-closing_output_iteration-'+str(iterations)+'.jpg', closing_image)
     return closing_image
 
-def contours_to_text_block(canny_edges):
+def contours_to_text_block(canny_edges, write_path):
     filtered_contours = []
     filtered_contours_properties = []
 
     # initial dilation
-    dilated_image = dilate_to_text_block(canny_edges, N=6, iterations=1) # dilate just enough to capture words
+    dilated_image = dilate_to_text_block(canny_edges, 6, 1, write_path) # dilate just enough to capture words
     contours, hierarchy = cv.findContours(dilated_image, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
     contour_properties = get_contour_properties(contours, dilated_image)
 
@@ -37,12 +37,12 @@ def contours_to_text_block(canny_edges):
 
     return filtered_contours, filtered_contours_properties
 
-def contours_to_text_line(canny_edges):
+def contours_to_text_line(canny_edges, write_path):
     filtered_contours = []
     filtered_contours_properties = []
 
     # initial dilation
-    dilated_image = dilate_to_text_line(canny_edges, N=6, iterations=1) # dilate just enough to capture words
+    dilated_image = dilate_to_text_line(canny_edges, 6, 1, write_path) # dilate just enough to capture words
     contours, hierarchy = cv.findContours(dilated_image, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
     contour_properties = get_contour_properties(contours, dilated_image)
 
@@ -71,7 +71,7 @@ def get_contour_properties(contours, edges):
         })
     return contour_properties
 
-def output_contours(contours):
+def output_contours(contours, canny_output, write_path):
     # Approximate contours to polygons and get bounding rectangles
     contours_poly = [None]*len(contours)
     boundRect = [None]*len(contours)
@@ -87,7 +87,7 @@ def output_contours(contours):
         color = (rng.randint(0, 256), rng.randint(0, 256), rng.randint(0, 256))
         cv.rectangle(contour_shape, (int(boundRect[i][0]), int(boundRect[i][1])), \
                      (int(boundRect[i][0] + boundRect[i][2]), int(boundRect[i][1] + boundRect[i][3])), color, 2)
-        cv.imwrite(r'tmp/img/contour/contours.jpg', contour_shape)
+        cv.imwrite(write_path+'/contours.jpg', contour_shape)
 
 def nearest_neighbor(contour_properties, contour_list): #TODO: Jake -  to develop
 
@@ -110,7 +110,7 @@ def nearest_neighbor(contour_properties, contour_list): #TODO: Jake -  to develo
             distance = min(dist_left, dist_above, dist_below, dist_right)
 
             # calculate percent distance in height
-            perc_height_difference = abs(height  current_contour['height'] - 1)
+            #perc_height_difference = abs(height  current_contour['height'] - 1)
 
             if perc_height_difference <= .2 and distance > closest_distance:  # if similar height and closest in distance so far
                 closest_distance = distance
@@ -122,10 +122,11 @@ def nearest_neighbor(contour_properties, contour_list): #TODO: Jake -  to develo
     return clustered_contours
 
 # MAIN #TODO: Refactor and integrate into main
-def roi_main(img):
+def roi_main(path, write_path):
     #import image
-    #img = cv.imread('test1.jpg',0)
-
+    img = cv.imread(path,0)
+    print('Img Path: '+str(img))
+    print('Write_Path: '+str(write_path))
     #resize
     img = cv.resize(img, (1350, 1150)) #TODO: investigate at implementation should the pixels be read and scaled acordingly?
 
@@ -136,11 +137,11 @@ def roi_main(img):
     canny_output = cv.Canny(img, threshold, threshold*2)
 
     # Find text blob or line contours through dilation and filter to find lines of text
-    text_block_list, text_block_properties = contours_to_text_block(canny_output)
-    text_line_list, text_line_properties = contours_to_text_line(canny_output)
+    text_block_list, text_block_properties = contours_to_text_block(canny_output, write_path)
+    text_line_list, text_line_properties = contours_to_text_line(canny_output, write_path)
 
     # output contour lines to jpg in folder
-    output_contours(text_block_list)
+    output_contours(text_block_list, canny_output, write_path)
 
     # cluster similar contours to create blocks of text  #TODO: Jake - nearest neighbor clustering
     #clustered_text_line = nearest_neighbor(text_line_properties, text_line_list) # return clustered text lines
@@ -149,5 +150,5 @@ def roi_main(img):
     i=0
     for crop in text_block_properties:
         cropped_image = img[crop['bottom']:crop['top'], crop['left']:crop['right']]
-        cv.imwrite(r'tmp/img/crop/crop'+str(i)+'.jpg', cropped_image)
+        cv.imwrite(write_path+'/crop'+str(i)+'.jpg', cropped_image)
         i+= 1

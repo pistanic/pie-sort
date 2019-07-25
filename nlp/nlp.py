@@ -31,7 +31,7 @@ def extract_PHN(ocr_df, ocr_str):
 
     # Step 1: Find PHN through regular expressions to find "PHN" in ocr_string and return next word
     string_list = ocr_str.split()
-    pattern_PHN = r'\bphn\b|\bid\b|\hin\b|\hn\b'
+    pattern_PHN = r'\bphn\b|\bid\b|\bhin\b|\bhn\b'
     p = re.compile(pattern_PHN, re.I) # re.I ignores case
     idx = [i for i, item in enumerate(string_list) if re.search(p, item)] # return index of "PHN" in string list
 
