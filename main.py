@@ -16,14 +16,16 @@ def printf(name, value):
 
 def main():
     LOCAL_DIR = './'
-    #PDF_DIR = LOCAL_DIR+'PDF/'
     PDF_DIR = LOCAL_DIR+'PDF/'
     TMP_DIR = LOCAL_DIR+'tmp/'
     SORT_DIR = LOCAL_DIR+'pd/'
     IMG_DIR = TMP_DIR+'img/'
     TXT_DIR = TMP_DIR+'txt/'
+    DIL_DIR = IMG_DIR+'dilation'
+    CON_DIR = IMG_DIR+'contour'
+    CRP_DIR = IMG_DIR+'crop'
 
-    docMan.init_folders([PDF_DIR, TMP_DIR, SORT_DIR, IMG_DIR, TXT_DIR])
+    docMan.init_folders([PDF_DIR, TMP_DIR, SORT_DIR, IMG_DIR, TXT_DIR, DIL_DIR, CON_DIR, CRP_DIR])
 
     # test db
     #patient_database = searchHelp.init_test_db()

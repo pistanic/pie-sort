@@ -5,17 +5,17 @@ import random as rng
 def dilate_to_text_line(edges, N, iterations):
     kernel = np.ones((1, N), np.uint8)
     dilated_image = cv.dilate(edges, kernel, iterations=iterations) #TODO figure out if which morphological transformation is better: dilate or closing
-    cv.imwrite(r'\dilations\output_iteration-'+str(iterations)+'.jpg', dilated_image) #TODO: change path
+    cv.imwrite(r'tmp/img/dilation/output_iteration-'+str(iterations)+'.jpg', dilated_image)
     closing_image = cv.morphologyEx(dilated_image, cv.MORPH_CLOSE, kernel)
-    cv.imwrite(r'\dilations\closing_output_iteration-'+str(iterations)+'.jpg', closing_image) #TODO: change path
+    cv.imwrite(r'tmp/img/dilation/closing_output_iteration-'+str(iterations)+'.jpg', closing_image)
     return closing_image
 
 def dilate_to_text_block(edges, N, iterations):
     kernel = np.ones((N, N), np.uint8)
     dilated_image = cv.dilate(edges, kernel, iterations=iterations) #TODO figure out if which morphological transformation is better: dilate or closing
-    cv.imwrite(r'\dilations\output_iteration-'+str(iterations)+'.jpg', dilated_image) #TODO: change path
+    cv.imwrite(r'tmp/img/dilation/output_iteration-'+str(iterations)+'.jpg', dilated_image)
     closing_image = cv.morphologyEx(dilated_image, cv.MORPH_CLOSE, kernel)
-    cv.imwrite(r'\dilations\closing_output_iteration-'+str(iterations)+'.jpg', closing_image) #TODO: change path
+    cv.imwrite(r'tmp/img/dilation/closing_output_iteration-'+str(iterations)+'.jpg', closing_image)
     return closing_image
 
 def contours_to_text_block(canny_edges):
@@ -87,7 +87,7 @@ def output_contours(contours):
         color = (rng.randint(0, 256), rng.randint(0, 256), rng.randint(0, 256))
         cv.rectangle(contour_shape, (int(boundRect[i][0]), int(boundRect[i][1])), \
                      (int(boundRect[i][0] + boundRect[i][2]), int(boundRect[i][1] + boundRect[i][3])), color, 2)
-        cv.imwrite(r'contours.jpg', contour_shape)  #TODO: change path
+        cv.imwrite(r'tmp/img/contour/contours.jpg', contour_shape)
 
 def nearest_neighbor(contour_properties, contour_list): #TODO: Jake -  to develop
 
@@ -110,7 +110,7 @@ def nearest_neighbor(contour_properties, contour_list): #TODO: Jake -  to develo
             distance = min(dist_left, dist_above, dist_below, dist_right)
 
             # calculate percent distance in height
-            perc_height_difference = abs(height / current_contour['height'] - 1)
+            perc_height_difference = abs(height  current_contour['height'] - 1)
 
             if perc_height_difference <= .2 and distance > closest_distance:  # if similar height and closest in distance so far
                 closest_distance = distance
@@ -122,32 +122,32 @@ def nearest_neighbor(contour_properties, contour_list): #TODO: Jake -  to develo
     return clustered_contours
 
 # MAIN #TODO: Refactor and integrate into main
+def roi_main(img):
+    #import image
+    #img = cv.imread('test1.jpg',0)
 
-#import image
-img = cv.imread('test1.jpg',0)  #TODO: change path
+    #resize
+    img = cv.resize(img, (1350, 1150)) #TODO: investigate at implementation should the pixels be read and scaled acordingly?
 
-#resize
-img = cv.resize(img, (1350, 1150)) #TODO: investigate at implementation
+    # Threshold
+    threshold = 200
 
-# Threshold
-threshold = 200
-# Detect edges using Canny
-canny_output = cv.Canny(img, threshold, threshold*2)
+    # Detect edges using Canny
+    canny_output = cv.Canny(img, threshold, threshold*2)
 
+    # Find text blob or line contours through dilation and filter to find lines of text
+    text_block_list, text_block_properties = contours_to_text_block(canny_output)
+    text_line_list, text_line_properties = contours_to_text_line(canny_output)
 
-# Find text blob or line contours through dilation and filter to find lines of text
-text_block_list, text_block_properties = contours_to_text_block(canny_output)
-text_line_list, text_line_properties = contours_to_text_line(canny_output)
+    # output contour lines to jpg in folder
+    output_contours(text_block_list)
 
-# output contour lines to jpg in folder
-output_contours(text_block_list)
+    # cluster similar contours to create blocks of text  #TODO: Jake - nearest neighbor clustering
+    #clustered_text_line = nearest_neighbor(text_line_properties, text_line_list) # return clustered text lines
 
-# cluster similar contours to create blocks of text  #TODO: Jake - nearest neighbor clustering
-#clustered_text_line = nearest_neighbor(text_line_properties, text_line_list) # return clustered text lines
-
-# crop contours and output to folder
-i=0
-for crop in text_block_properties:
-    cropped_image = img[crop['bottom']:crop['top'], crop['left']:crop['right']]
-    cv.imwrite(r'\crops\crop'+str(i)+'.jpg', cropped_image) #TODO: change path
-    i+= 1
+    # crop contours and output to folder
+    i=0
+    for crop in text_block_properties:
+        cropped_image = img[crop['bottom']:crop['top'], crop['left']:crop['right']]
+        cv.imwrite(r'tmp/img/crop/crop'+str(i)+'.jpg', cropped_image)
+        i+= 1

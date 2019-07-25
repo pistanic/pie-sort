@@ -21,8 +21,6 @@ from dateutil.parser import parse
 # OUTPUT: df - Patient dataframe in correct format for validation
 # DESCRIPTION: This function imports the patient database and returns a formatted dataframe
 def init_validation_df(excel_path):
-
-
     #if os.path.exists('pie_patient_db.csv'):     # ****************** needs to be debugged ****************
     #    patient_df = pd.read_csv(r'pie_patient_db.csv')
     #    return patient df
