@@ -21,11 +21,6 @@ from dateutil.parser import parse
 # OUTPUT: df - Patient dataframe in correct format for validation
 # DESCRIPTION: This function imports the patient database and returns a formatted dataframe
 def init_validation_df(excel_path):
-    #if os.path.exists('pie_patient_db.csv'):     # ****************** needs to be debugged ****************
-    #    patient_df = pd.read_csv(r'pie_patient_db.csv')
-    #    return patient df
-
-    #else:
     patient_df = pd.read_excel(excel_path) # need to reformat 'PatientName' and 'DOB' columns
     patient_df = patient_df.applymap(str) # converts data to string format
 
@@ -63,7 +58,7 @@ def init_validation_df(excel_path):
 
     patient_df.join(dates_df)
     patient_df.drop(columns=['DOB'], inplace=True)
-    patient_df.to_csv(r'.\pie_patient_db.csv', index=False)
+    patient_df.to_csv(r'./pie_patient_db.csv', index=False)
 
     return patient_df
 
