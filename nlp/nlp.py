@@ -43,7 +43,7 @@ def extract_PHN(ocr_df, ocr_str):
         # eg. if string_list[i] is "PHN:12345678" or "PHN1234578" then the PHN number is in the same index
             possible_PHNs.append(re.sub("\D", "", string_list[i])) # appends only numeric characters of word
 
-    # Step 2: Find PHN through similar length digits ie. any digit more than 4 characters and less than 12
+    # Step 2: Find PHN through similar length digits ie. any digit more than 7 characters and less than 15
 
     # ************************************** NEW NEEDS TO BE TESTED IN CLINIC **************************************
 
@@ -68,16 +68,28 @@ def extract_PHN(ocr_df, ocr_str):
 
     # Strip everything except digits
     extraction_df['text'] = extraction_df['text'].str.replace("-","")
-    extraction_df['text'] = extraction_df['text'].str.findall('(\d{7,11})')
+    extraction_df['text'] = extraction_df['text'].str.findall('(\d{7,15})')
     extraction_df['text'] = extraction_df['text'].apply(', '.join)
+
+    consecutive_num_list = []
+    # if phn has space in middle like 1234 4567 891
+    for string in extraction_df['text']:
+        if string.strip(): # if string is not null when whitespace is stripped
+            consecutive_num_list.append(string)
+            consecutive_num = ''.join(consecutive_num_list)  # combine list elements together
+            if 7 < len(consecutive_num) < 15:
+                possible_PHNs.append(consecutive_num)
+        else: # if whitespace then clear list
+            consecutive_num_list.clear()
+
 
     # create boolean mask for numeric text in ocr_df
     df_digits_boo = extraction_df['text'].str.isdigit()
     df_mask = df_digits_boo == True
 
     df_digits = extraction_df['text'].loc[df_mask] # create new dataframe of only digits from OCR
-    df_PHN = df_digits.loc[df_digits.str.len() >= 8]  # create dataframe of possible PHN (numbers with greater than or equal to 8 digits)
-    similiar_length_digits = list(df_digits.loc[(df_digits.str.len() > 4) & (df_digits.str.len() < 12)]) # append list of digits that are 5 to 12 characters in length
+    df_PHN = df_digits.loc[df_digits.str.len() >= 6]  # create dataframe of possible PHN (numbers with greater than or equal to 8 digits)
+    similiar_length_digits = list(df_digits.loc[(df_digits.str.len() > 6) & (df_digits.str.len() < 16)]) # append list of digits that are 5 to 12 characters in length
 
     for digits in similiar_length_digits:
         possible_PHNs.append(digits)
