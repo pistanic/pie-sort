@@ -139,65 +139,39 @@ def contour_euclidean_distance(contour_properties):
 
     # Define number of contours
     contour_num = len(contour_properties)
-
-    #Normalize contour_properties
+    # Normalize contour_properties
     contour_properties_normalized = normalize_contour_properties(contour_properties)
-
-    # Define NULL array for calculation of euclidean distances between clusters
+    # Define array for distance in similarity of each contour to every other contour
     euclidean_dist = [[0 for i in range(contour_num)] for j in range(contour_num)]
-
     # Define array iterators
     row = 0
 
-    # Calculate euclidean distances between contours
+    # calculate distance matrix
     for current_contour in contour_properties_normalized:
         column = 0
-
         for compare_contour in contour_properties_normalized:
-            #calculate and assign euclidean distance to array
-            top_diff = math.pow(abs(compare_contour['top'] - current_contour['top']),2)
-            bottom_diff = math.pow(abs(compare_contour['bottom'] - current_contour['bottom']),2)
-            left_diff = math.pow(abs(compare_contour['left'] - current_contour['left']),2)
-            right_diff = math.pow(abs(compare_contour['right'] - current_contour['right']),2)
-            size_diff = math.pow(abs(compare_contour['size'] - current_contour['size']),2)
-
-            # This calc is specical, to handle cluster calc takes into how many
-            # contours are in cluster when calculating height
-            height_diff = math.pow(abs((compare_contour['height']/compare_contour['numoflines']) - (current_contour['height']/current_contour['numoflines'])),2)
+            # calculate the difference in each feature
+            top_diff = round(math.pow(abs(compare_contour['top'] - current_contour['top']),2), 3)
+            bottom_diff = round(math.pow(abs(compare_contour['bottom'] - current_contour['bottom']),2), 3)
+            left_diff = round(math.pow(abs(compare_contour['left'] - current_contour['left']),2), 3)
+            right_diff = round(math.pow(abs(compare_contour['right'] - current_contour['right']),2), 3)
+            size_diff = round(math.pow(abs(compare_contour['size'] - current_contour['size']),2), 3)
+            height_diff = round(math.pow(abs(compare_contour['height'] - current_contour['height']),2), 3) # height difference
 
             # Sum all values
-            diff_sum = math.fsum([top_diff,bottom_diff,left_diff,right_diff,height_diff,size_diff])
+            diff_sum = math.fsum([top_diff,bottom_diff,left_diff,right_diff,height_diff,size_diff])#
+            #diff_sum = math.fsum([top_diff,bottom_diff,4*left_diff,4*right_diff,height_diff])# ,size_diff])#
 
-            euclidean_dist[row][column] = math.sqrt(diff_sum)
+            #squareroot
+            euclidean_dist[row][column] = round(math.sqrt(diff_sum), 3)
 
             column +=1
         row +=1
 
+    euclidean_dist = np.asarray(euclidean_dist) # convert to numpy array
+    np.fill_diagonal(euclidean_dist, np.inf) # fill diagonals with infinity to symbolize the contour being compared
+
     return euclidean_dist
-
-def is_cluster_possible(euclidean_dist,EUCLIDEAN_THRESHOLD):
-
-    # Define number of contours/ iterator length
-    num = len(euclidean_dist)
-
-    # Find if a distance exists that is less than EUCLIDEAN_THRESHOLD, if so return true
-    for i in range(num):
-        for j in range(num):
-            # if value is zero pass
-            if(euclidean_dist[i][j]==0):
-                pass
-
-            # if value less than threshold return true
-            elif(euclidean_dist[i][j]<EUCLIDEAN_THRESHOLD):
-                return True
-
-            # if value greater than threshold pass
-            else:
-                pass
-
-    # if no dist less than EUCLIDEAN_THRESHOLD found return false
-    return False
-
 
 def combine_contours(contour_properties1, contour_properties2, contour_properties):
     contour_properties_master = copy.deepcopy(contour_properties)
@@ -208,8 +182,7 @@ def combine_contours(contour_properties1, contour_properties2, contour_propertie
     combined_contour['top'] = max(contour_properties1['top'], contour_properties2['top'])
     combined_contour['bottom'] = min(contour_properties1['bottom'], contour_properties2['bottom'])
     combined_contour['size'] = (combined_contour['right'] - combined_contour['left'])*(combined_contour['top'] - combined_contour['bottom'])
-    combined_contour['height'] = combined_contour['top'] - combined_contour['bottom']
-    combined_contour['numoflines'] = contour_properties1['numoflines'] + contour_properties2['numoflines']
+    combined_contour['height'] = (contour_properties1['height'] + contour_properties2['height'])/2
 
     # delete contour1
     for i in range(len(contour_properties_master)):
@@ -228,44 +201,22 @@ def combine_contours(contour_properties1, contour_properties2, contour_propertie
     return contour_properties_master
 
 
-def nearest_neighbor(contour_properties, contour_list): # TODO: Jake -  to develop
-
+def nearest_neighbor(contour_properties, canny_output):
     # Define new clustered_contours array
     clustered_contours = list(contour_properties)
 
-    #extend list to include # of contours in contour(account for clusters)
-    for current_contour in clustered_contours:
-        current_contour['numoflines'] = 1
+    # Threshold for when to stop merging clusters
+    DISTANCE_THRESHOLD = .4
 
-    # Define array of euclidean distances between clusters
-    euclidean_dist = contour_euclidean_distance(clustered_contours)
+    # Define matrix of euclidean distances between all clusters
+    distance_matrix = contour_euclidean_distance(clustered_contours)
 
-    # Define Static euclidean distance threshold for determining clusters
-    EUCLIDEAN_THRESHOLD = 1
+    [row, column] = np.unravel_index(distance_matrix.argmin(), distance_matrix.shape)  # return index of shortest distance in matrix
 
-    # While a cluster is possible, combine contours til not possible
-    while(is_cluster_possible(euclidean_dist,EUCLIDEAN_THRESHOLD)):
-        row = 0
-        cluster_flag = False
-
-        #Combine Clusters
-        for current_contour in clustered_contours:
-            column = 0
-
-            for compare_contour in clustered_contours:
-                # if euclidean_dist is less than threshold, combine and break out of 2 for loops
-                if((euclidean_dist[row][column]<EUCLIDEAN_THRESHOLD) and (euclidean_dist[row][column]!=0)):
-                    clustered_contours = combine_contours(current_contour,compare_contour,clustered_contours)
-                    cluster_flag = True
-                    break
-                column = column +1
-
-            if(cluster_flag):
-                break
-            row =row+1
-
-        #Update Euclidean Distances
-        euclidean_dist = contour_euclidean_distance(clustered_contours)
+    while distance_matrix[row, column] < DISTANCE_THRESHOLD:
+        clustered_contours = combine_contours(clustered_contours[row], clustered_contours[column], clustered_contours) # combine most similar
+        distance_matrix = contour_euclidean_distance(clustered_contours) # Recalculate most similar
+        [row, column] = np.unravel_index(distance_matrix.argmin(), distance_matrix.shape)  # return index of shortest distance in matrix
 
     return clustered_contours
 
@@ -289,7 +240,7 @@ def roi_main(path, write_path):
     text_line_list, text_line_properties = contours_to_text_line(canny_output, write_path)
 
     # cluster similar contours to create blocks of text  #TODO: Jake - nearest neighbor clustering
-    clustered_text_properties = nearest_neighbor(text_line_properties, text_line_list) # return clustered text lines
+    clustered_text_properties = nearest_neighbor(text_line_properties, canny_output) # return clustered text lines
 
     # output contour lines to jpg in folder
     output_contours(text_line_list, canny_output, write_path)
@@ -298,7 +249,7 @@ def roi_main(path, write_path):
 
     # crop contours and output to folder
     i=0
-    for crop in text_block_properties:
+    for crop in clustered_text_properties:
         cropped_image = img[crop['bottom']:crop['top'], crop['left']:crop['right']]
         cv.imwrite(write_path+'/crop'+str(i)+'.jpg', cropped_image)
         i+= 1
