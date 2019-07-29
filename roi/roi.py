@@ -224,8 +224,8 @@ def nearest_neighbor(contour_properties, canny_output):
 def roi_main(path, write_path):
     #import image
     img = cv.imread(path,0)
-    #print('Img Path: '+str(img))
-    #print('Write_Path: '+str(write_path))
+    print('Img Path: '+str(img))
+    print('Write_Path: '+str(write_path))
     #resize
     img = cv.resize(img, (1350, 1150)) #TODO: investigate at implementation should the pixels be read and scaled acordingly?
 

@@ -100,7 +100,13 @@ def main():
             #docMan.un_sort(dist_path, source_path)
             # ---------------- #
         else:
-            printf('Stage Of validation','Preproc = filter')
+            printf('Stage Of validation','Preproc = roi')
+            # Use roi to generate cropped images    
+            file_pages = docMan.get_file_list(img_path)
+            for page in file_pages
+                roi.roi_main(img_path+'/'+page, img_path)
+			    
+
             source_path = PDF_DIR+file_
             #docMan.sort(source_path, "./not_val/"+file_)
             #preproc.filtering(img_path)

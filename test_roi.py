@@ -21,5 +21,5 @@ for file_ in file_list:
 	jpg_list = docMan.get_file_list(img_path)
 	
 	for jpg in jpg_list:
-		print(img_path+jpg)
+		print('img_path + jpg'+img_path+jpg)
 		roi.roi_main(img_path+'/'+jpg, img_path)
