@@ -8,6 +8,7 @@
 
 import numpy as np
 import pandas as pd
+import calendar
 
 
 # INPUT: HorizontalLocation - Horizontal Center of Search Box (Pixels)
@@ -113,8 +114,9 @@ def get_dob_from_phn(db,phn):
     patient_df = find_in_df(db, 'PHN', phn)
     year = patient_df['DOB-YYYY'].values[0]
     month = patient_df['DOB-MM'].values[0]
+    month = calendar.month_abbr[int(float(month))]
     day = patient_df['DOB-DD'].values[0]
-    return year + '-' + month + '-' + day
+    return str(int(float(year))) + '-' + str(month) + '-' + str(int(float(day)))
 
 # INPUT: df - database to search
 #        phn - personal health number to look up

@@ -27,6 +27,7 @@ def extract_text(img_path, txt_path):
     for file_ in file_list:
         text = pytesseract.image_to_data(Image.open(img_path+'/'+file_)) # Tesseract OCR
         # Write tab delimited string into txt file
+        print("writing to file...."+txt_path+'/'+file_)
         file = open(txt_path+'/'+file_.replace('.jpg','.txt'), 'w')
         file.write(text)
         file.close

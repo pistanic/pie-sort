@@ -25,6 +25,7 @@ def format_df(df):
             ftxt = ftxt[:-1]
             df.at[index, 'text'] = ftxt
     df['text'] = df['text'].str.strip() # remove leading and trailing characters in Series/Index
+    df = df.applymap(str) # converts data to string format
 
     return df
 

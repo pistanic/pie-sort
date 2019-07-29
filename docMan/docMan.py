@@ -56,7 +56,7 @@ def init_validation_df(excel_path):
         except ValueError:
             print("init_validation_df debug - '" + date.__str__() + "' is not in a readable date format")
 
-    patient_df.join(dates_df)
+    patient_df = patient_df.join(dates_df)
     patient_df.drop(columns=['DOB'], inplace=True)
     patient_df.to_csv(r'./pie_patient_db.csv', index=False)
 

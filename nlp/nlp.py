@@ -18,7 +18,7 @@ import pandas as pd
 # OUTPUT: Number of digits in string of text
 # DESCRIPTION: Given a string function returns number of digits ie: abc-123456 returns 6
 def count_digits(string):
-    return sum(item.isdigit() for item in string)
+    return sum(item.isdigit() for item in str(string))
 
 # INPUT: ocr_df - pandas dataframe of document OCR
 #        ocr_str - string of document text
@@ -53,7 +53,7 @@ def extract_PHN(ocr_df, ocr_str):
     count_df['digit_count'] = extraction_df['text'].apply(count_digits)  # count number of digits ie. PHN123456 returns 6
     count_df = count_df.join(extraction_df)
 
-    count_df = count_df[count_df['digit_count'] > 9]
+    count_df = count_df[count_df['digit_count'] > 5]
     for i in range(len(count_df)):
         if len(count_df['text'].iloc[i]) - count_df['text'].iloc[i].rfind('-') == 4:  # find placement of last "-"
             possible_PHNs.append(re.sub("\D", "", count_df['text'].iloc[i][:-4]))  # strip anything after last "-" and append only characters to list
@@ -68,6 +68,7 @@ def extract_PHN(ocr_df, ocr_str):
 
     # Strip everything except digits
     extraction_df['text'] = extraction_df['text'].str.replace("-","")
+    extraction_df['text'] = extraction_df['text'].str.replace(";", "")
     extraction_df['text'] = extraction_df['text'].str.findall('(\d{7,15})')
     extraction_df['text'] = extraction_df['text'].apply(', '.join)
 

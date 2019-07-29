@@ -5,6 +5,7 @@ import ezRead
 import docMan # four source see: docMan/
 import searchHelp
 import validate
+import roi
 import pandas as pd
 from os import makedirs
 
@@ -21,11 +22,8 @@ def main():
     SORT_DIR = LOCAL_DIR+'pd/'
     IMG_DIR = TMP_DIR+'img/'
     TXT_DIR = TMP_DIR+'txt/'
-    DIL_DIR = IMG_DIR+'dilation'
-    CON_DIR = IMG_DIR+'contour'
-    CRP_DIR = IMG_DIR+'crop'
 
-    docMan.init_folders([PDF_DIR, TMP_DIR, SORT_DIR, IMG_DIR, TXT_DIR, DIL_DIR, CON_DIR, CRP_DIR])
+    docMan.init_folders([PDF_DIR, TMP_DIR, SORT_DIR, IMG_DIR, TXT_DIR])
 
     # test db
     #patient_database = searchHelp.init_test_db()
@@ -33,6 +31,8 @@ def main():
     # real db
     try:
         patient_database = pd.read_csv('./pie_patient_db.csv')
+        patient_database = patient_database.applymap(str)  # converts data to string format
+
     except FileNotFoundError:
         print('*************** CVS DB NOT FOUND ***************')
         patient_database = docMan.init_validation_df("../pdb.xlsx")
@@ -55,6 +55,13 @@ def main():
         # Print processing Image name
         print('image_name', image_name)
         img_path = IMG_DIR+image_name
+	
+        # Make image specific paths
+        DIL_DIR = img_path+'/dilation'
+        CON_DIR = img_path+'/contour'
+        CRP_DIR = img_path+'/crop'
+        CRP_TXT_DIR = CRP_DIR+'/txt'
+        docMan.init_folders([DIL_DIR, CON_DIR, CRP_DIR, CRP_TXT_DIR])
 
         # Apply first layer of preprocessing.
         # Resize will increase the size of the immage and apply a mild blur
@@ -93,6 +100,8 @@ def main():
             num_val_docs = 1 + num_val_docs
             #dist_path = SORT_DIR+valid_phn+'/'+file_
             source_path = PDF_DIR+file_
+            print('*************** VALIDATION STAT ***************')
+            print("Docments validated up to this point: "+str(num_val_docs)+'/'+str(cur_num_docs))
             #docMan.sort(source_path, dist_path)
             #docMan.sort(source_path, "./val/"+file_)
             ## DEBUG OPERATION! #
@@ -103,11 +112,19 @@ def main():
             printf('Stage Of validation','Preproc = roi')
             # Use roi to generate cropped images    
             file_pages = docMan.get_file_list(img_path)
-            for page in file_pages
+            for page in file_pages:
                 roi.roi_main(img_path+'/'+page, img_path)
 			    
-
-            source_path = PDF_DIR+file_
+            #file_crops = docMan.get_file_list(CRP_DIR)
+            #for crop in file_crops:
+            ocr_list = ocr.processing(CRP_DIR, CRP_TXT_DIR)
+            id_list = nlp.processing(ocr_list)
+            if (validate.validate(ocr_list, id_list, patient_database)):
+                validated_docs.append(file_,)
+                num_val_docs = 1 + num_val_docs
+                print('*************** VALIDATION STAT ***************')
+                print("Docments validated up to this point: "+str(num_val_docs)+'/'+str(cur_num_docs))
+            
             #docMan.sort(source_path, "./not_val/"+file_)
             #preproc.filtering(img_path)
             #ocr_list = ocr.processing(img_path, txt_path)

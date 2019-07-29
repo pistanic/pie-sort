@@ -7,17 +7,17 @@ import copy
 def dilate_to_text_line(edges, N, iterations, write_path):
     kernel = np.ones((1, N), np.uint8)
     dilated_image = cv.dilate(edges, kernel, iterations=iterations) #TODO figure out if which morphological transformation is better: dilate or closing
-    cv.imwrite(write_path+'/dilation-output_iteration-'+str(iterations)+'.jpg', dilated_image)
+    cv.imwrite(write_path+'/dilation/dilation-output_iteration-line'+str(iterations)+'.jpg', dilated_image)
     closing_image = cv.morphologyEx(dilated_image, cv.MORPH_CLOSE, kernel)
-    cv.imwrite(write_path+'/dilation-closing_output_iteration-'+str(iterations)+'.jpg', closing_image)
+    cv.imwrite(write_path+'/dilation/closing_output_iteration-line'+str(iterations)+'.jpg', closing_image)
     return closing_image
 
 def dilate_to_text_block(edges, N, iterations, write_path):
     kernel = np.ones((N, N), np.uint8)
     dilated_image = cv.dilate(edges, kernel, iterations=iterations) #TODO figure out if which morphological transformation is better: dilate or closing
-    cv.imwrite(write_path+'/dilation-output_iteration-'+str(iterations)+'.jpg', dilated_image)
+    cv.imwrite(write_path+'/dilation/dilation-output_iteration-block'+str(iterations)+'.jpg', dilated_image)
     closing_image = cv.morphologyEx(dilated_image, cv.MORPH_CLOSE, kernel)
-    cv.imwrite(write_path+'/dilation-closing_output_iteration-'+str(iterations)+'.jpg', closing_image)
+    cv.imwrite(write_path+'/dilation/closing_output_block'+str(iterations)+'.jpg', closing_image)
     return closing_image
 
 def contours_to_text_block(canny_edges, write_path):
@@ -25,14 +25,19 @@ def contours_to_text_block(canny_edges, write_path):
     filtered_contours_properties = []
 
     # initial dilation
-    dilated_image = dilate_to_text_block(canny_edges, 6, 1, write_path) # dilate just enough to capture words
+    dilated_image = dilate_to_text_block(canny_edges, 15, 1, write_path) # dilate just enough to capture words
     contours, hierarchy = cv.findContours(dilated_image, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
     contour_properties = get_contour_properties(contours, dilated_image)
+   # count = len(contours)
+
+    # while count > 30:
+    #     dilated_image = dilate_to_text_block(dilated_image, 20, 1, write_path)  # dilate just enough to capture words
+    #     contours, hierarchy = cv.findContours(dilated_image, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+    #     count = len(contours)
 
     i = 0
     for c in contour_properties:
-        #and hierarchy[0, i, 3] == -1
-        if 10000 < c['size'] < 1000000: #if contour too small or contour is fucking massive (ie border of page or box)
+        if 2000 < c['size'] < 100000000 and (c['top']-c['bottom'])/(c['right']-c['left']) < 12: #if contour too small or contour is fucking massive (ie border of page or box)
             filtered_contours.append(contours.__getitem__(i))
             filtered_contours_properties.append(c)
         i += 1
@@ -44,13 +49,22 @@ def contours_to_text_line(canny_edges, write_path):
     filtered_contours_properties = []
 
     # initial dilation
-    dilated_image = dilate_to_text_line(canny_edges, 6, 1, write_path) # dilate just enough to capture words
+    dilated_image = dilate_to_text_line(canny_edges, 5, 1, write_path) # dilate just enough to capture words
     contours, hierarchy = cv.findContours(dilated_image, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+    #
+    # count = len(contours)
+
+    # while count > 400:
+    #     dilated_image = dilate_to_text_line(dilated_image, 12, 1, write_path)  # dilate just enough to capture words
+    #     contours, hierarchy = cv.findContours(dilated_image, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+    #     contour_properties = get_contour_properties(contours, dilated_image)
+    #     count = len(contours)
+
     contour_properties = get_contour_properties(contours, dilated_image)
 
     i = 0
     for c in contour_properties:
-        if 200 < c['size'] < 1000000 and c['height'] < 300: #if contour too small or contour is fucking massive (ie border of page or box)
+        if 500 < c['size'] < 100000000 and (c['top']-c['bottom'])/(c['right']-c['left']) < 12 and c['height'] > 3: #if contour too small or contour is fucking massive (ie border of page or box)
             filtered_contours.append(contours.__getitem__(i))
             filtered_contours_properties.append(c)
         i += 1
@@ -73,7 +87,7 @@ def get_contour_properties(contours, edges):
         })
     return contour_properties
 
-def output_contours(contours, canny_output, write_path):
+def output_contours( contours, canny_output, write_path, method_type):
     # Approximate contours to polygons and get bounding rectangles
     contours_poly = [None]*len(contours)
     boundRect = [None]*len(contours)
@@ -89,7 +103,7 @@ def output_contours(contours, canny_output, write_path):
         color = (rng.randint(0, 256), rng.randint(0, 256), rng.randint(0, 256))
         cv.rectangle(contour_shape, (int(boundRect[i][0]), int(boundRect[i][1])), \
                      (int(boundRect[i][0] + boundRect[i][2]), int(boundRect[i][1] + boundRect[i][3])), color, 2)
-        cv.imwrite(write_path+'/contours_block.jpg', contour_shape)
+        cv.imwrite(write_path+'/contour/'+ method_type +'block.jpg', contour_shape)
 
 
 def print_cluster(contours_properties, canny_output, write_path):
@@ -101,7 +115,7 @@ def print_cluster(contours_properties, canny_output, write_path):
         color = (rng.randint(0, 256), rng.randint(0, 256), rng.randint(0, 256))
         cv.rectangle(contour_shape, (int(current_contour['left']), int(current_contour['bottom'])), \
                      (int((current_contour['right'])), int(current_contour['top'])), color, 2)
-        cv.imwrite(write_path+'/contours_cluster.jpg', contour_shape)
+        cv.imwrite(write_path+'/contour'+'/cluster.jpg', contour_shape)
 
 
 
@@ -159,7 +173,7 @@ def contour_euclidean_distance(contour_properties):
             height_diff = round(math.pow(abs(compare_contour['height'] - current_contour['height']),2), 3) # height difference
 
             # Sum all values
-            diff_sum = math.fsum([top_diff,bottom_diff,left_diff,right_diff,height_diff,size_diff])#
+            diff_sum = math.fsum([top_diff,bottom_diff,left_diff,right_diff,4*height_diff,size_diff])#
             #diff_sum = math.fsum([top_diff,bottom_diff,4*left_diff,4*right_diff,height_diff])# ,size_diff])#
 
             #squareroot
@@ -206,7 +220,7 @@ def nearest_neighbor(contour_properties, canny_output):
     clustered_contours = list(contour_properties)
 
     # Threshold for when to stop merging clusters
-    DISTANCE_THRESHOLD = .4
+    DISTANCE_THRESHOLD = .9
 
     # Define matrix of euclidean distances between all clusters
     distance_matrix = contour_euclidean_distance(clustered_contours)
@@ -224,10 +238,9 @@ def nearest_neighbor(contour_properties, canny_output):
 def roi_main(path, write_path):
     #import image
     img = cv.imread(path,0)
-    print('Img Path: '+str(img))
     print('Write_Path: '+str(write_path))
     #resize
-    img = cv.resize(img, (1350, 1150)) #TODO: investigate at implementation should the pixels be read and scaled acordingly?
+    #img = cv.resize(img, (1350, 1150)) #TODO: investigate at implementation should the pixels be read and scaled acordingly?
 
     # Threshold
     threshold = 200
@@ -236,21 +249,30 @@ def roi_main(path, write_path):
     canny_output = cv.Canny(img, threshold, threshold*2)
 
     # Find text blob or line contours through dilation and filter to find lines of text
+    print("making contours...") 
     text_block_list, text_block_properties = contours_to_text_block(canny_output, write_path)
     text_line_list, text_line_properties = contours_to_text_line(canny_output, write_path)
 
-    # cluster similar contours to create blocks of text  #TODO: Jake - nearest neighbor clustering
+    output_contours(text_block_list, canny_output, write_path, 'dilation-to-block')
+    output_contours(text_line_list, canny_output, write_path,'dilation-to-line')
+
+    # cluster similar contours to create blocks of text
+    print("clustering...")
     clustered_text_properties = nearest_neighbor(text_line_properties, canny_output) # return clustered text lines
 
     # output contour lines to jpg in folder
-    output_contours(text_line_list, canny_output, write_path)
-
     print_cluster(clustered_text_properties, canny_output, write_path)
 
+    print("cropping...")
     # crop contours and output to folder
     i=0
+
     for crop in clustered_text_properties:
         cropped_image = img[crop['bottom']:crop['top'], crop['left']:crop['right']]
-        cv.imwrite(write_path+'/crop'+str(i)+'.jpg', cropped_image)
+        cv.imwrite(write_path+'/crop/'+str(i)+'.jpg', cropped_image)
         i+= 1
 
+    for crop in text_block_properties:
+        cropped_image = img[crop['bottom']:crop['top'], crop['left']:crop['right']]
+        cv.imwrite(write_path+'/crop/'+'textblock'+str(i)+'.jpg', cropped_image)
+        i+= 1
