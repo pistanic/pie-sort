@@ -25,12 +25,12 @@ def main():
 
     docMan.init_folders([PDF_DIR, TMP_DIR, SORT_DIR, IMG_DIR, TXT_DIR])
 
-    # test db
-    #patient_database = searchHelp.init_test_db()
+    # #test db
+    # patient_database = searchHelp.init_test_db()
 
     # real db
     try:
-        patient_database = pd.read_csv('./pie_patient_db.csv')
+        patient_database = pd.read_csv('./pie_patient_db.csv', dtype=str)
         patient_database = patient_database.applymap(str)  # converts data to string format
 
     except FileNotFoundError:
@@ -132,18 +132,19 @@ def main():
             #if (validate.validate(ocr_list, id_list, patient_database)):
             #    validated_docs.append(file_,)
             #    num_val_docs = 1 + num_val_docs
-            #else:
-            #    failed_docs.append(file_)
+            else:
+               failed_docs.append(file_)
 
         cur_num_docs = cur_num_docs + 1;
         if (cur_num_docs == max_num_docs):
-            print("Number of Documens Processed: "+str(cur_num_docs))
+            print("Number of Documents Processed: "+str(cur_num_docs))
             break
 
     printf('Number of Validated Documents out of '+str(len(file_list)),num_val_docs)
-    printf('Accuracy', (max_num_docs/len(file_list)))
+    printf('Accuracy', (len(validated_docs)/(len(validated_docs)+len(failed_docs))))
     printf('Validated Documents',validated_docs)
     printf('Failing Documents',failed_docs)
+
     #except Exception as e:
     #    print(e)
     #    source_path = PDF_DIR+file_

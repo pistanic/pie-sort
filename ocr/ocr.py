@@ -25,7 +25,7 @@ def extract_text(img_path, txt_path):
     file_list.sort()
     i = 1
     for file_ in file_list:
-        text = pytesseract.image_to_data(Image.open(img_path+'/'+file_)) # Tesseract OCR
+        text = pytesseract.image_to_data(Image.open(img_path+'/'+file_),lang='eng') # Tesseract OCR
         # Write tab delimited string into txt file
         print("writing to file...."+txt_path+'/'+file_)
         file = open(txt_path+'/'+file_.replace('.jpg','.txt'), 'w')
@@ -55,7 +55,7 @@ def extract_string(img_path):
     file_list.sort()
     text = ''
     for file_ in file_list:
-        text = text + pytesseract.image_to_string(Image.open(img_path+'/'+file_)) + ' '      # Tesseract OCR)
+        text = text + pytesseract.image_to_string(Image.open(img_path+'/'+file_),lang='eng') + ' '      # Tesseract OCR)
     return text
 
 # INPUT: names - list of name strings
