@@ -95,45 +95,46 @@ def main():
         #Validate stage
         print('*************** ENTERING VALIDATION ***************')
         printf('Stage Of validation','Preproc = resize')
+        # if (validate.validate(ocr_list, id_list, patient_database)):
+        #     validated_docs.append(file_,)
+        #     num_val_docs = 1 + num_val_docs
+        #     #dist_path = SORT_DIR+valid_phn+'/'+file_
+        #     source_path = PDF_DIR+file_
+        #     print('*************** VALIDATION STAT ***************')
+        #     print("Docments validated up to this point: "+str(num_val_docs)+'/'+str(cur_num_docs))
+        #     #docMan.sort(source_path, dist_path)
+        #     #docMan.sort(source_path, "./val/"+file_)
+        #     ## DEBUG OPERATION! #
+        #     ## Move files back to PDF folder to aviod reverting manually.
+        #     #docMan.un_sort(dist_path, source_path)
+        #     # ---------------- #
+        # else:
+        # ****************************** COMMENTED OUT TO TEST ROI *********************************
+        printf('Stage of Validation','Preproc = roi')
+        # Use roi to generate cropped images
+        file_pages = docMan.get_file_list(img_path)
+        for page in file_pages:
+            roi.roi_main(img_path+'/'+page, img_path)
+
+        #file_crops = docMan.get_file_list(CRP_DIR)
+        #for crop in file_crops:
+        ocr_list = ocr.processing(CRP_DIR, CRP_TXT_DIR)
+        id_list = nlp.processing(ocr_list)
         if (validate.validate(ocr_list, id_list, patient_database)):
             validated_docs.append(file_,)
             num_val_docs = 1 + num_val_docs
-            #dist_path = SORT_DIR+valid_phn+'/'+file_
-            source_path = PDF_DIR+file_
             print('*************** VALIDATION STAT ***************')
             print("Docments validated up to this point: "+str(num_val_docs)+'/'+str(cur_num_docs))
-            #docMan.sort(source_path, dist_path)
-            #docMan.sort(source_path, "./val/"+file_)
-            ## DEBUG OPERATION! #
-            ## Move files back to PDF folder to aviod reverting manually.
-            #docMan.un_sort(dist_path, source_path)
-            # ---------------- #
+
+        #docMan.sort(source_path, "./not_val/"+file_)
+        #preproc.filtering(img_path)
+        #ocr_list = ocr.processing(img_path, txt_path)
+        #id_list = nlp.processing(ocr_list)
+        #if (validate.validate(ocr_list, id_list, patient_database)):
+        #    validated_docs.append(file_,)
+        #    num_val_docs = 1 + num_val_docs
         else:
-            printf('Stage Of validation','Preproc = roi')
-            # Use roi to generate cropped images    
-            file_pages = docMan.get_file_list(img_path)
-            for page in file_pages:
-                roi.roi_main(img_path+'/'+page, img_path)
-			    
-            #file_crops = docMan.get_file_list(CRP_DIR)
-            #for crop in file_crops:
-            ocr_list = ocr.processing(CRP_DIR, CRP_TXT_DIR)
-            id_list = nlp.processing(ocr_list)
-            if (validate.validate(ocr_list, id_list, patient_database)):
-                validated_docs.append(file_,)
-                num_val_docs = 1 + num_val_docs
-                print('*************** VALIDATION STAT ***************')
-                print("Docments validated up to this point: "+str(num_val_docs)+'/'+str(cur_num_docs))
-            
-            #docMan.sort(source_path, "./not_val/"+file_)
-            #preproc.filtering(img_path)
-            #ocr_list = ocr.processing(img_path, txt_path)
-            #id_list = nlp.processing(ocr_list)
-            #if (validate.validate(ocr_list, id_list, patient_database)):
-            #    validated_docs.append(file_,)
-            #    num_val_docs = 1 + num_val_docs
-            else:
-               failed_docs.append(file_)
+           failed_docs.append(file_)
 
         cur_num_docs = cur_num_docs + 1;
         if (cur_num_docs == max_num_docs):

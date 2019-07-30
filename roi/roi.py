@@ -25,7 +25,7 @@ def contours_to_text_block(canny_edges, write_path):
     filtered_contours_properties = []
 
     # initial dilation
-    dilated_image = dilate_to_text_block(canny_edges, 15, 1, write_path) # dilate just enough to capture words
+    dilated_image = dilate_to_text_block(canny_edges, 25, 1, write_path) # dilate just enough to capture words
     contours, hierarchy = cv.findContours(dilated_image, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
     contour_properties = get_contour_properties(contours, dilated_image)
    # count = len(contours)
@@ -49,7 +49,7 @@ def contours_to_text_line(canny_edges, write_path):
     filtered_contours_properties = []
 
     # initial dilation
-    dilated_image = dilate_to_text_line(canny_edges, 5, 1, write_path) # dilate just enough to capture words
+    dilated_image = dilate_to_text_line(canny_edges, 25, 1, write_path) # dilate just enough to capture words
     contours, hierarchy = cv.findContours(dilated_image, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
     #
     # count = len(contours)
