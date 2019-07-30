@@ -26,16 +26,16 @@ def main():
     docMan.init_folders([PDF_DIR, TMP_DIR, SORT_DIR, IMG_DIR, TXT_DIR])
 
     # #test db
-    # patient_database = searchHelp.init_test_db()
+    patient_database = searchHelp.init_test_db()
 
-    # real db
-    try:
-        patient_database = pd.read_csv('./pie_patient_db.csv', dtype=str)
-        patient_database = patient_database.applymap(str)  # converts data to string format
-
-    except FileNotFoundError:
-        print('*************** CVS DB NOT FOUND ***************')
-        patient_database = docMan.init_validation_df("../pdb.xlsx")
+    # # real db
+    # try:
+    #     patient_database = pd.read_csv('./pie_patient_db.csv', dtype=str)
+    #     patient_database = patient_database.applymap(str)  # converts data to string format
+    #
+    # except FileNotFoundError:
+    #     print('*************** CVS DB NOT FOUND ***************')
+    #     patient_database = docMan.init_validation_df("../pdb.xlsx")
 
     file_list = docMan.get_file_list(PDF_DIR)
 
@@ -66,7 +66,7 @@ def main():
         # Apply first layer of preprocessing.
         # Resize will increase the size of the immage and apply a mild blur
         # to average pixle values after they have been stretched.
-        #img_path = preproc.resize(img_path)
+        img_path = preproc.resize(img_path)
 
         # OCR Stage
         printf('txt_dir + img_name',TXT_DIR+image_name)
